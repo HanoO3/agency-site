@@ -9,7 +9,7 @@ export const NAV_LINKS = [
 ];
 
 export const SOCIAL_LINKS = [
-  { label: "Instagram", href: "#" },
-  { label: "LinkedIn", href: "#" },
-  { label: "GitHub", href: "#" },
+  { label: "Instagram", href: "https://instagram.com" },
+  { label: "LinkedIn", href: "https://linkedin.com" },
+  { label: "GitHub", href: "https://github.com" },
 ];
