@@ -50,56 +50,34 @@ export default function Hero() {
       rafId = requestAnimationFrame(renderMouseGlow);
     }
 
-    // GSAP Choreographed Entry & Parallax Timeline
+    // GSAP Entry & Parallax Timeline
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      // Ambient Volumetric Illumination Rise
-      tl.fromTo(
-        ambientGlowRef.current,
-        { opacity: 0, scale: 0.6 },
-        { opacity: 0.85, scale: 1, duration: 2.4 }
-      );
-
-      // Hero Split-Text Typography Stagger Reveal
-      if (headingRef.current) {
-        const letters = headingRef.current.querySelectorAll(".hero-char");
+      if (!prefersReducedMotion) {
+        // Hero background ambient lighting prepares as intro approaches brand reveal
         tl.fromTo(
-          letters,
-          {
-            opacity: 0,
-            y: 75,
-            filter: "blur(14px)",
-            scale: 0.96,
-          },
-          {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            scale: 1,
-            duration: 1.35,
-            stagger: 0.05,
-            clearProps: "filter,scale",
-          },
-          "-=2.0"
+          ambientGlowRef.current,
+          { opacity: 0, scale: 0.7 },
+          { opacity: 0.85, scale: 1, duration: 1.8, delay: 0.8 }
         );
-      }
 
-      // Supporting Tag, Tagline & Action Buttons
-      if (contentRef.current) {
-        tl.fromTo(
-          contentRef.current.children,
-          { opacity: 0, y: 30, filter: "blur(6px)" },
-          {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 1.1,
-            stagger: 0.12,
-            clearProps: "filter",
-          },
-          "-=0.9"
-        );
+        // Hero subtitle tagline & action buttons reveal smoothly as preloader dissolves
+        if (contentRef.current) {
+          tl.fromTo(
+            contentRef.current.children,
+            { opacity: 0, y: 25, filter: "blur(6px)" },
+            {
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+              duration: 1.0,
+              stagger: 0.12,
+              clearProps: "filter",
+            },
+            1.4
+          );
+        }
       }
 
       // Multi-layer Cinematic Scroll Parallax
