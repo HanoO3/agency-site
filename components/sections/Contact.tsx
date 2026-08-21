@@ -5,6 +5,7 @@ import ScrollReveal from "@/components/animations/ScrollReveal";
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", details: "" });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -12,9 +13,12 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="relative w-full bg-[#05050A] py-32 md:py-44 px-6 z-10 overflow-hidden">
+    <section
+      id="contact"
+      className="relative w-full bg-[#05050A] py-32 md:py-44 px-6 z-10 overflow-hidden"
+    >
       {/* Background Volumetric Center Ember Glow */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[radial-gradient(circle_at_center,rgba(224,67,43,0.12)_0%,rgba(122,31,23,0.05)_45%,rgba(5,5,10,0)_75%)] blur-[160px] pointer-events-none -z-10" />
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] rounded-full bg-[radial-gradient(circle_at_center,rgba(224,67,43,0.12)_0%,rgba(122,31,23,0.05)_45%,rgba(5,5,10,0)_75%)] blur-[160px] pointer-events-none -z-10" />
 
       <div className="max-w-4xl mx-auto">
         {/* Section Tag & Headline */}
@@ -31,19 +35,22 @@ export default function Contact() {
         </ScrollReveal>
 
         {/* Minimal Dark Form */}
-        <ScrollReveal delay={0.1} y={30}>
+        <ScrollReveal delay={0.12} y={30}>
           {submitted ? (
-            <div className="p-12 rounded-2xl bg-[#08080E] border border-[#E0432B]/40 text-center shadow-[0_0_50px_rgba(224,67,43,0.25)]">
-              <span className="text-3xl mb-4 inline-block">✨</span>
-              <h3 className="font-display text-3xl font-bold uppercase text-white mb-2">
+            <div className="p-12 md:p-16 rounded-2xl bg-[#08080E] border border-[#E0432B]/45 text-center shadow-[0_0_60px_rgba(224,67,43,0.25)]">
+              <span className="text-4xl mb-4 inline-block animate-pulse">✨</span>
+              <h3 className="font-display text-3xl md:text-4xl font-bold uppercase text-white mb-3">
                 Inquiry Sent
               </h3>
-              <p className="text-white/60 font-light max-w-md mx-auto">
-                Thank you for reaching out to Cartcode. We will review your project details and get back to you within 24 hours.
+              <p className="text-white/60 font-light max-w-md mx-auto leading-relaxed">
+                Thank you for reaching out to Cartcode. We have received your message and will review your project details promptly.
               </p>
               <button
-                onClick={() => setSubmitted(false)}
-                className="mt-8 text-xs font-mono uppercase tracking-widest text-[#E0432B] hover:text-white underline underline-offset-4"
+                onClick={() => {
+                  setFormData({ name: "", email: "", details: "" });
+                  setSubmitted(false);
+                }}
+                className="mt-8 text-xs font-mono uppercase tracking-widest text-[#E0432B] hover:text-white underline underline-offset-4 cursor-pointer transition-colors"
               >
                 Send another message
               </button>
@@ -51,7 +58,7 @@ export default function Contact() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-12">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                {/* Name */}
+                {/* Name Field */}
                 <div className="relative group">
                   <label
                     htmlFor="name"
@@ -64,11 +71,14 @@ export default function Contact() {
                     type="text"
                     required
                     placeholder="Jane Doe"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-lg text-white placeholder:text-white/20 focus:outline-none focus:border-[#E0432B] transition-colors duration-300 rounded-none font-light"
                   />
+                  <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#E0432B] group-focus-within:w-full transition-all duration-500 pointer-events-none shadow-[0_0_10px_#E0432B]" />
                 </div>
 
-                {/* Email */}
+                {/* Email Field */}
                 <div className="relative group">
                   <label
                     htmlFor="email"
@@ -81,8 +91,11 @@ export default function Contact() {
                     type="email"
                     required
                     placeholder="jane@studio.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-lg text-white placeholder:text-white/20 focus:outline-none focus:border-[#E0432B] transition-colors duration-300 rounded-none font-light"
                   />
+                  <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#E0432B] group-focus-within:w-full transition-all duration-500 pointer-events-none shadow-[0_0_10px_#E0432B]" />
                 </div>
               </div>
 
@@ -99,15 +112,18 @@ export default function Contact() {
                   rows={4}
                   required
                   placeholder="Scope, objectives, and rough timeline..."
+                  value={formData.details}
+                  onChange={(e) => setFormData({ ...formData, details: e.target.value })}
                   className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-lg text-white placeholder:text-white/20 focus:outline-none focus:border-[#E0432B] transition-colors duration-300 resize-none rounded-none font-light"
                 />
+                <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#E0432B] group-focus-within:w-full transition-all duration-500 pointer-events-none shadow-[0_0_10px_#E0432B]" />
               </div>
 
               {/* Large CTA Button */}
-              <div className="pt-8">
+              <div className="pt-6">
                 <button
                   type="submit"
-                  className="group relative inline-flex items-center gap-4 rounded-full bg-[#E0432B] px-10 py-5 text-xs font-mono uppercase tracking-[0.25em] text-white transition-all duration-300 hover:bg-[#FF7048] hover:shadow-[0_0_40px_rgba(224,67,43,0.38)] hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
+                  className="group relative inline-flex items-center gap-4 rounded-full bg-[#E0432B] px-10 py-5 text-xs font-mono uppercase tracking-[0.25em] text-white transition-all duration-300 hover:bg-[#FF7048] hover:shadow-[0_0_40px_rgba(224,67,43,0.4)] hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                 >
                   <span>Send Inquiry</span>
                   <span className="inline-block transition-transform duration-300 group-hover:translate-x-2 font-mono text-sm">

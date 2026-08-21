@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { projects } from "@/data/projects";
 import { Project } from "@/types/project";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 
 const CATEGORIES = ["ALL", "E-COMMERCE", "APP DEVELOPMENT", "WEB DEVELOPMENT"];
@@ -12,22 +13,66 @@ export default function Work() {
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const horizontalTrackRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+
   const filteredProjects = projects.filter(
     (p) => activeFilter === "ALL" || p.category.toUpperCase() === activeFilter
   );
 
-  return (
-    <section id="work" className="relative w-full bg-[#05050A] py-32 md:py-44 px-6 z-10">
-      {/* Volumetric background ambient glow */}
-      <div className="absolute left-[-10%] top-[30%] w-[700px] h-[700px] rounded-full bg-[radial-gradient(circle_at_center,rgba(224,67,43,0.06)_0%,rgba(5,5,10,0)_70%)] blur-[160px] pointer-events-none -z-10" />
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
+    // Only apply pinned horizontal scroll on desktop screens with standard filters
+    const isDesktop = window.innerWidth >= 1024;
+
+    if (!isDesktop || prefersReducedMotion || activeFilter !== "ALL") {
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      const track = horizontalTrackRef.current;
+      const trigger = triggerRef.current;
+      if (!track || !trigger) return;
+
+      const totalScroll = track.scrollWidth - window.innerWidth + 120;
+
+      gsap.to(track, {
+        x: -totalScroll,
+        ease: "none",
+        scrollTrigger: {
+          trigger: trigger,
+          start: "top top",
+          end: () => `+=${totalScroll * 1.25}`,
+          scrub: 1,
+          pin: true,
+          invalidateOnRefresh: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [activeFilter]);
+
+  return (
+    <section
+      ref={sectionRef}
+      id="work"
+      className="relative w-full bg-[#05050A] py-24 md:py-36 z-10 overflow-hidden"
+    >
+      {/* Background Volumetric Ambient Glow */}
+      <div className="absolute left-[-10%] top-[25%] w-[750px] h-[750px] rounded-full bg-[radial-gradient(circle_at_center,rgba(224,67,43,0.08)_0%,rgba(5,5,10,0)_70%)] blur-[160px] pointer-events-none -z-10" />
+
+      {/* Section Header */}
+      <div className="max-w-7xl mx-auto px-6 mb-16">
         <ScrollReveal y={30}>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-12 border-b border-white/10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-10 border-b border-white/10">
             <div>
               <p className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#E0432B] mb-3 font-mono font-medium">
-                Portfolio
+                Selected Cases
               </p>
               <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-[#F5F5F7]">
                 Featured Client Work
@@ -40,7 +85,7 @@ export default function Work() {
                 <button
                   key={cat}
                   onClick={() => setActiveFilter(cat)}
-                  className={`text-[10px] sm:text-xs font-mono uppercase tracking-widest px-4 py-2 rounded-full border transition-all duration-300 ${
+                  className={`text-[10px] sm:text-xs font-mono uppercase tracking-widest px-4 py-2 rounded-full border transition-all duration-300 cursor-pointer ${
                     activeFilter === cat
                       ? "border-[#E0432B] bg-[#E0432B]/10 text-white shadow-[0_0_15px_rgba(224,67,43,0.25)]"
                       : "border-white/10 bg-white/[0.02] text-white/50 hover:border-white/30 hover:text-white"
@@ -52,33 +97,91 @@ export default function Work() {
             </div>
           </div>
         </ScrollReveal>
+      </div>
 
-        {/* Asymmetric Masonry Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mt-16">
+      {/* DESKTOP PINNED HORIZONTAL SHOWCASE (When filter is 'ALL') */}
+      {activeFilter === "ALL" ? (
+        <div ref={triggerRef} className="hidden lg:block relative w-full overflow-hidden">
+          <div
+            ref={horizontalTrackRef}
+            className="flex gap-12 pl-12 pr-24 w-max items-center h-[75vh]"
+          >
+            {filteredProjects.map((project, idx) => {
+              const projectNumber = `0${idx + 1}`;
+
+              return (
+                <div
+                  key={project.slug}
+                  onClick={() => setSelectedProject(project)}
+                  className="group relative w-[680px] h-[540px] flex-shrink-0 bg-[#08080E] rounded-2xl border border-white/10 overflow-hidden cursor-pointer transition-all duration-500 hover:border-[#E0432B]/50 hover:shadow-[0_0_45px_rgba(224,67,43,0.25)] flex flex-col justify-between"
+                >
+                  {/* Top Bar inside Card */}
+                  <div className="p-8 pb-4 flex items-center justify-between z-10">
+                    <div className="flex items-center gap-4">
+                      <span className="font-mono text-sm font-bold text-[#E0432B]">
+                        {projectNumber}
+                      </span>
+                      <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/50">
+                        {project.category}
+                      </span>
+                    </div>
+                    <span className="text-xs font-mono text-white/40 border border-white/10 px-3 py-1 rounded-full bg-black/40">
+                      {project.year || "2026"}
+                    </span>
+                  </div>
+
+                  {/* Project Image Showcase with Internal Parallax Zoom */}
+                  <div className="relative mx-8 h-[270px] rounded-xl overflow-hidden">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      sizes="680px"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter brightness-[0.88] contrast-[1.05] group-hover:brightness-100"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#08080E]/90 via-transparent to-transparent pointer-events-none" />
+                  </div>
+
+                  {/* Bottom Information */}
+                  <div className="p-8 pt-4 z-10">
+                    <div className="flex items-end justify-between gap-4">
+                      <div>
+                        <h3 className="font-display text-3xl font-bold uppercase tracking-tight text-[#F5F5F7] group-hover:text-white transition-colors duration-300">
+                          {project.title}
+                        </h3>
+                        <p className="text-xs text-white/50 font-light mt-2 max-w-md line-clamp-2 leading-relaxed">
+                          {project.summary}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#E0432B] group-hover:translate-x-1.5 transition-transform duration-300 flex-shrink-0">
+                        <span>VIEW</span>
+                        <span className="text-sm">→</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      {/* RESPONSIVE STACKED GRID (Mobile & Filtered Views) */}
+      <div
+        className={`${
+          activeFilter === "ALL" ? "block lg:hidden" : "block"
+        } max-w-7xl mx-auto px-6`}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
           {filteredProjects.map((project, idx) => {
-            const isEven = idx % 2 === 0;
-
             return (
-              <ScrollReveal
-                key={project.slug}
-                delay={idx * 0.1}
-                y={40}
-                className={`${isEven ? "md:translate-y-0" : "md:translate-y-12"}`}
-              >
+              <ScrollReveal key={project.slug} delay={idx * 0.1} y={40}>
                 <div
                   onClick={() => setSelectedProject(project)}
-                  className="group relative bg-[#08080E] rounded-xl border border-white/10 overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.03] hover:border-[#E0432B]/40 hover:shadow-[0_0_40px_rgba(224,67,43,0.22)]"
+                  className="group relative bg-[#08080E] rounded-2xl border border-white/10 overflow-hidden cursor-pointer transition-all duration-500 hover:border-[#E0432B]/40 hover:shadow-[0_0_40px_rgba(224,67,43,0.22)]"
                 >
-                  {/* Image Container with Mixed Aspect Ratio */}
-                  <div
-                    className={`relative w-full overflow-hidden ${
-                      project.aspectRatio === "16/9"
-                        ? "aspect-[16/9]"
-                        : project.aspectRatio === "4/5"
-                        ? "aspect-[4/5]"
-                        : "aspect-[4/3]"
-                    }`}
-                  >
+                  <div className="relative w-full aspect-[16/10] overflow-hidden">
                     <Image
                       src={project.image}
                       alt={project.title}
@@ -86,40 +189,25 @@ export default function Work() {
                       sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter brightness-[0.88] contrast-[1.08] group-hover:brightness-100"
                     />
-
-                    {/* Dark gradient overlay & Ember Glow Rim */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#08080E] via-transparent to-transparent opacity-80 group-hover:opacity-40 transition-opacity duration-500" />
-                    
-                    {/* Hover Top Right Tag */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#08080E] via-transparent to-transparent opacity-85" />
                     <div className="absolute top-4 right-4 z-10">
-                      <span className="text-[10px] font-mono uppercase tracking-widest px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white/80 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:border-[#E0432B]/40">
-                        {project.year}
+                      <span className="text-[10px] font-mono uppercase tracking-widest px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white/80">
+                        {project.year || "2026"}
                       </span>
                     </div>
                   </div>
 
-                  {/* Project Details */}
-                  <div className="p-6 sm:p-8 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#E0432B]">
-                          {project.category}
-                        </span>
-                        <span className="text-xs font-mono text-white/40">
-                          {project.client}
-                        </span>
-                      </div>
+                  <div className="p-6 sm:p-8">
+                    <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#E0432B]">
+                      {project.category}
+                    </span>
+                    <h3 className="font-display text-2xl font-bold uppercase tracking-tight text-[#F5F5F7] group-hover:text-white transition-colors duration-300 mt-2">
+                      {project.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-white/50 font-light mt-2 leading-relaxed">
+                      {project.summary}
+                    </p>
 
-                      <h3 className="font-display text-xl sm:text-2xl font-bold uppercase tracking-tight text-[#F5F5F7] group-hover:text-white transition-colors duration-300">
-                        {project.title}
-                      </h3>
-
-                      <p className="text-xs sm:text-sm text-white/50 font-light mt-3 leading-relaxed">
-                        {project.summary}
-                      </p>
-                    </div>
-
-                    {/* Footer Tags & Arrow */}
                     <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/5">
                       <div className="flex flex-wrap gap-2">
                         {(project.tags ?? []).map((t, i) => (
@@ -131,8 +219,7 @@ export default function Work() {
                           </span>
                         ))}
                       </div>
-
-                      <div className="flex items-center gap-1 text-xs font-mono text-[#E0432B] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="flex items-center gap-1 text-xs font-mono text-[#E0432B]">
                         <span>VIEW</span>
                         <span className="transition-transform group-hover:translate-x-1">→</span>
                       </div>
@@ -157,13 +244,13 @@ export default function Work() {
           >
             <button
               onClick={() => setSelectedProject(null)}
-              className="absolute top-6 right-6 text-white/50 hover:text-white text-xl font-mono p-2"
+              className="absolute top-6 right-6 text-white/50 hover:text-white text-xl font-mono p-2 cursor-pointer"
             >
               ✕
             </button>
 
             <span className="text-xs font-mono uppercase tracking-[0.3em] text-[#E0432B]">
-              {selectedProject.category} — {selectedProject.year}
+              {selectedProject.category} — {selectedProject.year || "2026"}
             </span>
 
             <h2 className="font-display text-3xl sm:text-5xl font-extrabold uppercase text-[#F5F5F7] tracking-tight mt-2 mb-6">
@@ -196,7 +283,7 @@ export default function Work() {
               </div>
               <button
                 onClick={() => setSelectedProject(null)}
-                className="rounded-full bg-[#E0432B] px-6 py-2.5 text-xs font-mono uppercase tracking-widest text-white hover:bg-[#FF7048] transition-colors"
+                className="rounded-full bg-[#E0432B] px-6 py-2.5 text-xs font-mono uppercase tracking-widest text-white hover:bg-[#FF7048] transition-colors cursor-pointer"
               >
                 Close Project
               </button>
