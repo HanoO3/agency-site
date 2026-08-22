@@ -118,3 +118,17 @@ canvas {
   touch-action: none;
   pointer-events: none;
 }
+
+/* 3D Character Container & Letter Rendering */
+.hero-char-wrapper {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.hero-char {
+  display: inline-block;
+  color: #f5f5f7;
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}

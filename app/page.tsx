@@ -2,6 +2,7 @@ import Hero from "@/components/sections/Hero";
 import Services from "@/components/sections/Services";
 import Work from "@/components/sections/Work";
 import About from "@/components/sections/About";
+import Team from "@/components/sections/Team";
 import Process from "@/components/sections/Process";
 import Testimonials from "@/components/sections/Testimonials";
 import Contact from "@/components/sections/Contact";
@@ -20,6 +21,9 @@ export default function Home() {
 
       {/* About Section with Cartcode actual manifesto and stats */}
       <About />
+
+      {/* Team Section with Cartcode multidisciplinary talent */}
+      <Team />
 
       {/* Process Section with Cartcode 4-step workflow */}
       <Process />

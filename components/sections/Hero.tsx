@@ -10,6 +10,7 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const subtagRef = useRef<HTMLParagraphElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const mouseGlowRef = useRef<HTMLDivElement>(null);
   const ambientGlowRef = useRef<HTMLDivElement>(null);
@@ -50,37 +51,120 @@ export default function Hero() {
       rafId = requestAnimationFrame(renderMouseGlow);
     }
 
-    // GSAP Entry & Parallax Timeline
+    // GSAP Entry & Parallax Context
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      const chars = headingRef.current?.querySelectorAll(".hero-char");
+      const subtag = subtagRef.current;
+      const content = contentRef.current;
+      const ambientGlow = ambientGlowRef.current;
 
-      if (!prefersReducedMotion) {
-        // Hero background ambient lighting prepares as intro approaches brand reveal
-        tl.fromTo(
-          ambientGlowRef.current,
-          { opacity: 0, scale: 0.7 },
-          { opacity: 0.85, scale: 1, duration: 1.8, delay: 0.8 }
-        );
+      if (!prefersReducedMotion && chars && chars.length > 0) {
+        // Initial setup for character physical spring state
+        gsap.set(chars, {
+          opacity: 0,
+          y: 120,
+          rotateX: -65,
+          scale: 0.88,
+          transformOrigin: "50% 100% -30px",
+        });
 
-        // Hero subtitle tagline & action buttons reveal smoothly as preloader dissolves
-        if (contentRef.current) {
-          tl.fromTo(
-            contentRef.current.children,
-            { opacity: 0, y: 25, filter: "blur(6px)" },
+        if (subtag) {
+          gsap.set(subtag, { opacity: 0, y: 15 });
+        }
+
+        if (content) {
+          gsap.set(content.children, { opacity: 0, y: 22 });
+        }
+
+        if (ambientGlow) {
+          gsap.set(ambientGlow, { opacity: 0, scale: 0.7 });
+        }
+
+        let hasTriggered = false;
+
+        const playHeroAnimation = () => {
+          if (hasTriggered) return;
+          hasTriggered = true;
+
+          const heroTl = gsap.timeline({
+            onComplete: () => {
+              // Ensure characters and elements remain permanently visible and rock-solid
+              if (chars) {
+                gsap.set(chars, { opacity: 1, y: 0, rotateX: 0, scale: 1 });
+              }
+            },
+          });
+
+          // 1. Ambient Volumetric Glow expansion
+          if (ambientGlow) {
+            heroTl.to(
+              ambientGlow,
+              { opacity: 0.85, scale: 1, duration: 1.4, ease: "power2.out" },
+              0
+            );
+          }
+
+          // 2. Strong elastic / spring character entrance with overshoot & physical bounce
+          heroTl.to(
+            chars,
             {
               opacity: 1,
               y: 0,
-              filter: "blur(0px)",
-              duration: 1.0,
-              stagger: 0.12,
-              clearProps: "filter",
+              rotateX: 0,
+              scale: 1,
+              duration: 1.25,
+              ease: "elastic.out(1.05, 0.42)",
+              stagger: 0.045,
             },
-            1.4
+            0
           );
-        }
+
+          // 3. Supporting Subtitle Tag entrance
+          if (subtag) {
+            heroTl.to(
+              subtag,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                ease: "power3.out",
+              },
+              0.35
+            );
+          }
+
+          // 4. Description Tagline & CTA Action Buttons entrance as CARTCODE settles
+          if (content) {
+            heroTl.to(
+              content.children,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                stagger: 0.08,
+                ease: "power3.out",
+              },
+              0.5
+            );
+          }
+        };
+
+        // Listen for preloader countdown climax or completion
+        window.addEventListener("cartcode_hero_reveal", playHeroAnimation);
+        window.addEventListener("cartcode_intro_finished", playHeroAnimation);
+
+        // Fallback in case preloader is bypassed or already finished
+        const fallbackTimer = setTimeout(playHeroAnimation, 1200);
+
+        // Cleanup event listener on unmount
+        return () => {
+          window.removeEventListener("cartcode_hero_reveal", playHeroAnimation);
+          window.removeEventListener("cartcode_intro_finished", playHeroAnimation);
+          clearTimeout(fallbackTimer);
+        };
       }
 
-      // Multi-layer Cinematic Scroll Parallax
+      // Multi-layer Cinematic Scroll Parallax (after settled)
       if (sectionRef.current && !prefersReducedMotion) {
         // Foreground: Hero Typography speeds up & fades into distance
         gsap.to(headingRef.current, {
@@ -168,21 +252,31 @@ export default function Hero() {
       {/* Hero Central Editorial Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 w-full max-w-7xl mx-auto flex flex-col items-center">
         {/* Supporting Subheadline Tag */}
-        <p className="text-[10px] sm:text-xs uppercase tracking-[0.45em] text-[#E0432B] mb-4 sm:mb-6 font-mono font-medium">
+        <p
+          ref={subtagRef}
+          className="text-[10px] sm:text-xs uppercase tracking-[0.45em] text-[#E0432B] mb-4 sm:mb-6 font-mono font-medium"
+        >
           Creative Technology Studio
         </p>
 
         {/* Massive Dominant Editorial Agency Typography */}
-        <h1
-          ref={headingRef}
-          className="font-display text-[18vw] sm:text-[16vw] md:text-[15vw] lg:text-[14vw] xl:text-[12.5rem] 2xl:text-[14.5rem] font-black tracking-tighter text-[#F5F5F7] leading-[0.85] select-none text-center w-full overflow-hidden uppercase"
-        >
-          {letters.map((char, i) => (
-            <span key={i} className="hero-char inline-block">
-              {char}
-            </span>
-          ))}
-        </h1>
+        <div className="hero-char-wrapper w-full flex justify-center py-2 overflow-visible">
+          <h1
+            ref={headingRef}
+            className="font-display text-[18vw] sm:text-[16vw] md:text-[15vw] lg:text-[14vw] xl:text-[12.5rem] 2xl:text-[14.5rem] font-black tracking-tighter text-[#F5F5F7] leading-[0.85] select-none text-center w-full uppercase flex items-center justify-center"
+            aria-label={headlineText}
+          >
+            {letters.map((char, i) => (
+              <span
+                key={i}
+                className="hero-char inline-block"
+                aria-hidden="true"
+              >
+                {char}
+              </span>
+            ))}
+          </h1>
+        </div>
 
         <div
           ref={contentRef}
