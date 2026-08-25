@@ -123,12 +123,87 @@ canvas {
 .hero-char-wrapper {
   perspective: 1200px;
   transform-style: preserve-3d;
+  position: relative;
 }
 
 .hero-char {
   display: inline-block;
-  color: #f5f5f7;
   will-change: transform, opacity;
   transform-style: preserve-3d;
   backface-visibility: hidden;
+  transform-origin: bottom center;
+}
+
+.hero-char-metallic {
+  background: linear-gradient(180deg, #FFFFFF 0%, #EAEAEF 32%, #A0A0AC 72%, #686874 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 35px rgba(224, 67, 43, 0.32));
+}
+
+.hero-char-revealed {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFA07A 20%, #FF6B4A 50%, #E0432B 85%, #9E1F12 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 25px rgba(224, 67, 43, 0.95)) drop-shadow(0 0 50px rgba(255, 112, 72, 0.6));
+}
+
+/* =========================================
+   SPINNING MOUSE CURSOR & MASK EFFECT
+========================================= */
+
+/* 1. Default cursor ko hero section ke andar hide karein */
+#hero {
+  cursor: none;
+}
+
+/* 2. The Spinning Rotating Circle */
+.spinning-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  margin-left: -20px; 
+  margin-top: -20px;
+  border: 2px solid #ff7048; 
+  border-radius: 50%;
+  pointer-events: none; 
+  z-index: 9999; 
+  mix-blend-mode: difference; 
+  
+  /* Ghoomne (Rotate) ki Speed */
+  animation: spin-circle 2.5s linear infinite; 
+  
+  /* Performance smooth rakhne ke liye */
+  will-change: transform; 
+  box-shadow: 0 0 15px rgba(255, 112, 72, 0.4);
+}
+
+/* Circle ke andar ek choti dot (Premium Look) */
+.spinning-cursor::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 4px;
+  background: #ff7048;
+  border-radius: 50%;
+}
+
+/* Ghoomne ki Animation Keyframes */
+@keyframes spin-circle {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 3. Fix for Reveal Layer (Taake mask text ke peeche nahi jaye) */
+.hero-char-overlay-wrapper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }

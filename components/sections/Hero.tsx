@@ -3,209 +3,116 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "@/lib/gsap";
-import { SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
+import { SITE_NAME } from "@/lib/constants";
 import HeroCanvas from "@/components/three/HeroCanvas";
+import TextPressure from "@/components/ui/TextPressure";
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const subtagRef = useRef<HTMLParagraphElement>(null);
+  const titleParallaxRef = useRef<HTMLDivElement>(null);
+  const titleTiltRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const mouseGlowRef = useRef<HTMLDivElement>(null);
-  const ambientGlowRef = useRef<HTMLDivElement>(null);
+  const ambientSmokeRef = useRef<HTMLDivElement>(null);
+  const subtagRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    // Mouse-following ember glow with damped lerp
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let currentX = mouseX;
-    let currentY = mouseY;
+    // Mouse tracking for fluid smoke haze & 3D tilt
+    let mouseX = typeof window !== "undefined" ? window.innerWidth / 2 : 0;
+    let mouseY = typeof window !== "undefined" ? window.innerHeight / 2 : 0;
+    let currentSmokeX = mouseX;
+    let currentSmokeY = mouseY;
+    let targetTiltX = 0;
+    let targetTiltY = 0;
+    let currentTiltX = 0;
+    let currentTiltY = 0;
     let rafId: number;
 
     const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
       if (sectionRef.current) {
         const rect = sectionRef.current.getBoundingClientRect();
-        mouseX = e.clientX - rect.left;
-        mouseY = e.clientY - rect.top;
+        targetTiltX = ((e.clientY - rect.top) / rect.height - 0.5) * -12;
+        targetTiltY = ((e.clientX - rect.left) / rect.width - 0.5) * 15;
       }
     };
 
-    const renderMouseGlow = () => {
-      currentX += (mouseX - currentX) * 0.08;
-      currentY += (mouseY - currentY) * 0.08;
+    const renderLoop = () => {
+      // Smooth damped lerp for volumetric smoke aura
+      currentSmokeX += (mouseX - currentSmokeX) * 0.07;
+      currentSmokeY += (mouseY - currentSmokeY) * 0.07;
 
-      if (mouseGlowRef.current) {
-        mouseGlowRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`;
+      if (ambientSmokeRef.current) {
+        ambientSmokeRef.current.style.transform = `translate3d(${currentSmokeX}px, ${currentSmokeY}px, 0) translate(-50%, -50%)`;
       }
 
-      rafId = requestAnimationFrame(renderMouseGlow);
+      // Smooth 3D tilt on separate inner title container (no conflict with GSAP parallax)
+      currentTiltX += (targetTiltX - currentTiltX) * 0.06;
+      currentTiltY += (targetTiltY - currentTiltY) * 0.06;
+
+      if (titleTiltRef.current && window.innerWidth >= 768 && !prefersReducedMotion) {
+        titleTiltRef.current.style.transform = `perspective(1200px) rotateX(${currentTiltX}deg) rotateY(${currentTiltY}deg)`;
+      }
+
+      rafId = requestAnimationFrame(renderLoop);
     };
 
-    if (!prefersReducedMotion && window.innerWidth >= 768) {
+    if (!prefersReducedMotion) {
       window.addEventListener("mousemove", handleMouseMove, { passive: true });
-      rafId = requestAnimationFrame(renderMouseGlow);
+      rafId = requestAnimationFrame(renderLoop);
     }
 
-    // GSAP Entry & Parallax Context
+    // Scroll Parallax Scrub
     const ctx = gsap.context(() => {
-      const chars = headingRef.current?.querySelectorAll(".hero-char");
-      const subtag = subtagRef.current;
-      const content = contentRef.current;
-      const ambientGlow = ambientGlowRef.current;
-
-      if (!prefersReducedMotion && chars && chars.length > 0) {
-        // Initial setup for character physical spring state
-        gsap.set(chars, {
-          opacity: 0,
-          y: 120,
-          rotateX: -65,
-          scale: 0.88,
-          transformOrigin: "50% 100% -30px",
+      if (sectionRef.current && titleParallaxRef.current) {
+        gsap.to(titleParallaxRef.current, {
+          y: -130,
+          opacity: 0.15,
+          filter: "blur(6px)",
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
         });
 
-        if (subtag) {
-          gsap.set(subtag, { opacity: 0, y: 15 });
-        }
-
-        if (content) {
-          gsap.set(content.children, { opacity: 0, y: 22 });
-        }
-
-        if (ambientGlow) {
-          gsap.set(ambientGlow, { opacity: 0, scale: 0.7 });
-        }
-
-        let hasTriggered = false;
-
-        const playHeroAnimation = () => {
-          if (hasTriggered) return;
-          hasTriggered = true;
-
-          const heroTl = gsap.timeline({
-            onComplete: () => {
-              // Ensure characters and elements remain permanently visible and rock-solid
-              if (chars) {
-                gsap.set(chars, { opacity: 1, y: 0, rotateX: 0, scale: 1 });
-              }
+        if (canvasContainerRef.current) {
+          gsap.to(canvasContainerRef.current, {
+            y: 90,
+            scale: 1.08,
+            opacity: 0.2,
+            ease: "none",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
             },
           });
+        }
 
-          // 1. Ambient Volumetric Glow expansion
-          if (ambientGlow) {
-            heroTl.to(
-              ambientGlow,
-              { opacity: 0.85, scale: 1, duration: 1.4, ease: "power2.out" },
-              0
-            );
-          }
-
-          // 2. Strong elastic / spring character entrance with overshoot & physical bounce
-          heroTl.to(
-            chars,
-            {
-              opacity: 1,
-              y: 0,
-              rotateX: 0,
-              scale: 1,
-              duration: 1.25,
-              ease: "elastic.out(1.05, 0.42)",
-              stagger: 0.045,
+        if (contentRef.current) {
+          gsap.to(contentRef.current, {
+            y: -60,
+            opacity: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top top",
+              end: "60% top",
+              scrub: true,
             },
-            0
-          );
-
-          // 3. Supporting Subtitle Tag entrance
-          if (subtag) {
-            heroTl.to(
-              subtag,
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.7,
-                ease: "power3.out",
-              },
-              0.35
-            );
-          }
-
-          // 4. Description Tagline & CTA Action Buttons entrance as CARTCODE settles
-          if (content) {
-            heroTl.to(
-              content.children,
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                stagger: 0.08,
-                ease: "power3.out",
-              },
-              0.5
-            );
-          }
-        };
-
-        // Listen for preloader countdown climax or completion
-        window.addEventListener("cartcode_hero_reveal", playHeroAnimation);
-        window.addEventListener("cartcode_intro_finished", playHeroAnimation);
-
-        // Fallback in case preloader is bypassed or already finished
-        const fallbackTimer = setTimeout(playHeroAnimation, 1200);
-
-        // Cleanup event listener on unmount
-        return () => {
-          window.removeEventListener("cartcode_hero_reveal", playHeroAnimation);
-          window.removeEventListener("cartcode_intro_finished", playHeroAnimation);
-          clearTimeout(fallbackTimer);
-        };
-      }
-
-      // Multi-layer Cinematic Scroll Parallax (after settled)
-      if (sectionRef.current && !prefersReducedMotion) {
-        // Foreground: Hero Typography speeds up & fades into distance
-        gsap.to(headingRef.current, {
-          y: -160,
-          opacity: 0.04,
-          filter: "blur(8px)",
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-
-        // Midground: 3D floating sculpture moves down slightly creating depth
-        gsap.to(canvasContainerRef.current, {
-          y: 90,
-          scale: 1.08,
-          opacity: 0.2,
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-
-        // Background / Content fade
-        gsap.to(contentRef.current, {
-          y: -70,
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top top",
-            end: "65% top",
-            scrub: true,
-          },
-        });
+          });
+        }
       }
     }, sectionRef);
 
@@ -216,16 +123,13 @@ export default function Hero() {
     };
   }, []);
 
-  const headlineText = SITE_NAME.toUpperCase();
-  const letters = headlineText.split("");
-
   return (
     <section
       ref={sectionRef}
       id="hero"
-      className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#05050A] select-none pt-16"
+      className="relative min-h-screen w-full flex flex-col items-center justify-between overflow-hidden bg-[#05050A] select-none pt-24 pb-12 px-4 sm:px-6 md:px-12"
     >
-      {/* 3D Atmospheric Background Canvas Container */}
+      {/* 3D Atmospheric Canvas (Particles & Fluid Ambient Light) */}
       <div
         ref={canvasContainerRef}
         className="absolute inset-0 w-full h-full z-0 pointer-events-none"
@@ -233,90 +137,107 @@ export default function Hero() {
         <HeroCanvas />
       </div>
 
-      {/* Interactive Mouse-Following Ember Glow (Desktop) */}
+      {/* Floating Volumetric Red Smoke Haze Orb Tracking Mouse (Subtle & Decent) */}
       <div
-        ref={mouseGlowRef}
-        className="hidden md:block absolute top-0 left-0 w-[550px] h-[550px] rounded-full pointer-events-none z-0 opacity-45 blur-[130px] transition-opacity duration-500"
+        ref={ambientSmokeRef}
+        className="fixed top-0 left-0 w-[500px] h-[500px] md:w-[680px] md:h-[680px] rounded-full pointer-events-none z-0 transition-opacity duration-700 will-change-transform opacity-30"
         style={{
           background:
-            "radial-gradient(circle, rgba(224,67,43,0.30) 0%, rgba(255,112,72,0.12) 40%, transparent 70%)",
+            "radial-gradient(circle, rgba(224,67,43,0.16) 0%, rgba(255,112,72,0.08) 35%, rgba(122,31,23,0.03) 60%, transparent 75%)",
+          filter: "blur(90px)",
         }}
       />
 
-      {/* Static Volumetric Right Ambient Rim Glow */}
+      {/* Subtle Static Center Base Ember Haze */}
+      <div className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] pointer-events-none z-0 bg-[radial-gradient(circle,rgba(224,67,43,0.10)_0%,rgba(122,31,23,0.03)_40%,transparent_75%)] blur-[100px]" />
+
+      {/* Top Status Pill / Subtag */}
       <div
-        ref={ambientGlowRef}
-        className="absolute right-[-8%] top-[12%] w-[450px] h-[450px] sm:w-[650px] sm:h-[650px] md:w-[850px] md:h-[850px] rounded-full bg-[radial-gradient(circle_at_center,rgba(224,67,43,0.22)_0%,rgba(122,31,23,0.10)_45%,rgba(5,5,10,0)_75%)] blur-[150px] pointer-events-none z-0"
-      />
-
-      {/* Hero Central Editorial Content */}
-      <div className="relative z-10 text-center px-4 sm:px-6 w-full max-w-7xl mx-auto flex flex-col items-center">
-        {/* Supporting Subheadline Tag */}
-        <p
-          ref={subtagRef}
-          className="text-[10px] sm:text-xs uppercase tracking-[0.45em] text-[#E0432B] mb-4 sm:mb-6 font-mono font-medium"
-        >
-          Creative Technology Studio
-        </p>
-
-        {/* Massive Dominant Editorial Agency Typography */}
-        <div className="hero-char-wrapper w-full flex justify-center py-2 overflow-visible">
-          <h1
-            ref={headingRef}
-            className="font-display text-[18vw] sm:text-[16vw] md:text-[15vw] lg:text-[14vw] xl:text-[12.5rem] 2xl:text-[14.5rem] font-black tracking-tighter text-[#F5F5F7] leading-[0.85] select-none text-center w-full uppercase flex items-center justify-center"
-            aria-label={headlineText}
-          >
-            {letters.map((char, i) => (
-              <span
-                key={i}
-                className="hero-char inline-block"
-                aria-hidden="true"
-              >
-                {char}
-              </span>
-            ))}
-          </h1>
+        ref={subtagRef}
+        className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between pt-2 opacity-100"
+      >
+        <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.02] backdrop-blur-md">
+          <span className="w-2 h-2 rounded-full bg-[#E0432B] animate-pulse shadow-[0_0_10px_#E0432B]" />
+          <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.3em] text-white/80 font-medium">
+            Shipping Ideas Into Reality.
+          </span>
         </div>
+      </div>
 
+      {/* Outer Parallax Wrapper (GSAP ScrollTrigger handles y & opacity cleanly on scroll) */}
+      <div
+        ref={titleParallaxRef}
+        className="relative z-10 w-full max-w-[720px] md:max-w-[920px] lg:max-w-[1150px] mx-auto flex flex-col items-center justify-center my-auto py-6 overflow-visible drop-shadow-[0_0_40px_rgba(224,67,43,0.3)] opacity-100 will-change-transform"
+      >
+        {/* Inner Tilt Wrapper (3D Mouse Perspective Tilt) */}
         <div
-          ref={contentRef}
-          className="flex flex-col items-center mt-6 sm:mt-10"
+          ref={titleTiltRef}
+          className="w-full flex flex-col items-center justify-center overflow-visible transition-transform duration-150 ease-out"
         >
-          <p className="text-[#F5F5F7]/60 max-w-lg mx-auto text-sm sm:text-base md:text-lg leading-relaxed font-light px-4 tracking-wide">
-            {SITE_TAGLINE}
-          </p>
+          {/* Kinetic Variable Typography */}
+          <div className="w-full h-[110px] sm:h-[140px] md:h-[180px] lg:h-[220px] relative flex items-center justify-center scale-y-[1.12] transform-gpu">
+            <TextPressure
+              text={SITE_NAME}
+              flex={true}
+              stroke={true}
+              width={true}
+              weight={true}
+              italic={false}
+              alpha={false}
+              minFontSize={42}
+              textColor="rgba(255, 255, 255, 0.95)"
+              strokeColor="#E0432B"
+            />
+          </div>
 
-          <div className="mt-8 sm:mt-10 flex flex-wrap justify-center items-center gap-5">
-            <Link
-              href="/contact"
-              className="group relative rounded-full bg-[#E0432B] px-8 py-4 text-xs font-mono uppercase tracking-[0.25em] text-white transition-all duration-300 hover:bg-[#FF7048] hover:shadow-[0_0_35px_rgba(224,67,43,0.4)] hover:scale-[1.03] active:scale-[0.98]"
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                Start a Project
-                <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5 font-mono">
-                  →
-                </span>
-              </span>
-            </Link>
-
-            <Link
-              href="/services"
-              className="rounded-full border border-white/15 px-8 py-4 text-xs font-mono uppercase tracking-[0.25em] text-[#F5F5F7]/80 backdrop-blur-md transition-all duration-300 hover:border-[#E0432B]/50 hover:bg-white/[0.04] hover:text-white hover:scale-[1.03] active:scale-[0.98]"
-            >
-              Explore Services
-            </Link>
+          {/* Central Red-Orange Tagline directly under letters */}
+          <div className="mt-4 sm:mt-6 text-center z-20">
+            <p className="hero-line text-[clamp(0.72rem,1.1vw,0.95rem)] font-extrabold tracking-[0.3em] uppercase text-[#E0432B] drop-shadow-[0_0_22px_rgba(224,67,43,0.85)] font-mono">
+              Crafting Interfaces That People Remember.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Minimal Animated Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 pointer-events-none opacity-40">
-        <span className="text-[9px] uppercase tracking-[0.35em] text-[#F5F5F7]/50 font-mono">
+      {/* Bottom Editorial Content & Magnetic Actions */}
+      <div
+        ref={contentRef}
+        className="relative z-10 w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 pt-6 opacity-100"
+      >
+        {/* Left Studio Bio */}
+        <p className="text-white/60 max-w-sm text-xs sm:text-sm leading-relaxed font-light tracking-wide text-center md:text-left">
+          Creative Technology Studio engineering fast, immersive, and motion-driven digital products.
+        </p>
+
+        {/* Right CTA Action Buttons */}
+        <div className="flex items-center gap-4 flex-shrink-0">
+          <Link
+            href="/contact"
+            className="group relative rounded-full bg-[#E0432B] px-7 py-3.5 text-xs font-mono uppercase tracking-[0.25em] text-white transition-all duration-300 hover:bg-[#FF7048] hover:shadow-[0_0_35px_rgba(224,67,43,0.45)] hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
+          >
+            <span className="relative z-10 flex items-center gap-3">
+              Explore Work
+              <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5 font-mono">
+                →
+              </span>
+            </span>
+          </Link>
+
+          <Link
+            href="/services"
+            className="rounded-full border border-white/15 px-6 py-3.5 text-xs font-mono uppercase tracking-[0.25em] text-[#F5F5F7]/80 backdrop-blur-md transition-all duration-300 hover:border-[#E0432B]/50 hover:bg-white/[0.04] hover:text-white hover:scale-[1.03] active:scale-[0.98]"
+          >
+            Let&apos;s Talk →
+          </Link>
+        </div>
+      </div>
+
+      {/* Minimal Scroll Pill Indicator */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 pointer-events-none opacity-40">
+        <span className="text-[8px] uppercase tracking-[0.35em] text-[#F5F5F7]/50 font-mono">
           Scroll
         </span>
-        <div className="w-4 h-7 rounded-full border border-white/20 flex items-start justify-center p-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#E0432B] animate-bounce" />
-        </div>
+        <div className="w-[1px] h-5 bg-gradient-to-b from-[#E0432B] to-transparent animate-pulse" />
       </div>
     </section>
   );

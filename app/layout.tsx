@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk, Roboto_Flex } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -13,6 +13,11 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
 });
+const robotoFlex = Roboto_Flex({
+  subsets: ["latin"],
+  variable: "--font-roboto-flex",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: `${SITE_NAME} — ${SITE_TAGLINE}`,
@@ -25,9 +30,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${robotoFlex.variable}`}>
       <body
-        className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased bg-[#05050A] text-[#F5F5F7]`}
+        className={`${inter.variable} ${spaceGrotesk.variable} ${robotoFlex.variable} font-sans antialiased bg-[#05050A] text-[#F5F5F7]`}
       >
         <Preloader />
         <CustomCursor />

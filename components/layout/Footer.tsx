@@ -1,13 +1,92 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { NAV_LINKS, SITE_NAME, SOCIAL_LINKS } from "@/lib/constants";
 import { services } from "@/data/services";
 
 export default function Footer() {
+  const watermarkRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const revealRef = useRef<HTMLDivElement>(null);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (prefersReducedMotion) return;
+
+    let targetX = -999;
+    let targetY = -999;
+    let currentX = -999;
+    let currentY = -999;
+    let isHovering = false;
+    let rafId: number;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (watermarkRef.current) {
+        const rect = watermarkRef.current.getBoundingClientRect();
+        targetX = e.clientX - rect.left;
+        targetY = e.clientY - rect.top;
+        isHovering = true;
+      }
+    };
+
+    const handleMouseEnter = () => {
+      isHovering = true;
+      if (glowRef.current) glowRef.current.style.opacity = "1";
+    };
+
+    const handleMouseLeave = () => {
+      isHovering = false;
+      targetX = -999;
+      targetY = -999;
+      if (glowRef.current) glowRef.current.style.opacity = "0";
+    };
+
+    const render = () => {
+      if (isHovering) {
+        currentX += (targetX - currentX) * 0.1;
+        currentY += (targetY - currentY) * 0.1;
+      } else {
+        currentX += (-999 - currentX) * 0.1;
+        currentY += (-999 - currentY) * 0.1;
+      }
+
+      if (revealRef.current) {
+        revealRef.current.style.setProperty("--watermark-x", `${currentX}px`);
+        revealRef.current.style.setProperty("--watermark-y", `${currentY}px`);
+      }
+
+      if (glowRef.current) {
+        glowRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      }
+
+      rafId = requestAnimationFrame(render);
+    };
+
+    const el = watermarkRef.current;
+    if (el) {
+      el.addEventListener("mousemove", handleMouseMove, { passive: true });
+      el.addEventListener("mouseenter", handleMouseEnter);
+      el.addEventListener("mouseleave", handleMouseLeave);
+      rafId = requestAnimationFrame(render);
+    }
+
+    return () => {
+      if (el) {
+        el.removeEventListener("mousemove", handleMouseMove);
+        el.removeEventListener("mouseenter", handleMouseEnter);
+        el.removeEventListener("mouseleave", handleMouseLeave);
+      }
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   return (
     <footer className="relative w-full bg-[#05050A] border-t border-white/10 z-10 overflow-hidden">
@@ -133,11 +212,37 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Massive Background Watermark Typography */}
-        <div className="relative select-none pointer-events-none overflow-hidden my-8 sm:my-12 text-center">
-          <span className="font-display text-[15vw] font-black uppercase text-white/[0.025] tracking-tighter leading-none block whitespace-nowrap">
+        {/* Massive Background Watermark Typography with Scoped Mouse Shadow & Reveal Effect */}
+        <div
+          ref={watermarkRef}
+          className="relative select-none overflow-hidden my-8 sm:my-12 text-center cursor-default group/watermark"
+        >
+          {/* Scoped Local Mouse Liquid Ember Glow Follower */}
+          <div
+            ref={glowRef}
+            className="absolute top-0 left-0 w-[450px] h-[450px] rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-500 bg-[radial-gradient(circle,rgba(224,67,43,0.30)_0%,rgba(255,112,72,0.15)_35%,rgba(122,31,23,0.06)_60%,transparent_75%)] blur-[70px] will-change-transform z-0"
+          />
+
+          {/* Base Layer: Dark Subtle Watermark */}
+          <span className="relative z-10 font-display text-[15vw] font-black uppercase text-white/[0.035] tracking-tighter leading-none block whitespace-nowrap transition-colors duration-500 group-hover/watermark:text-white/[0.06]">
             {SITE_NAME}
           </span>
+
+          {/* Overlay Layer: Glowing Red/Orange Masked Typography Revealed Strictly on Mouse Movement */}
+          <div
+            ref={revealRef}
+            className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none select-none overflow-hidden"
+            style={{
+              WebkitMaskImage:
+                "radial-gradient(circle 240px at var(--watermark-x, -999px) var(--watermark-y, -999px), black 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.2) 65%, transparent 100%)",
+              maskImage:
+                "radial-gradient(circle 240px at var(--watermark-x, -999px) var(--watermark-y, -999px), black 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.2) 65%, transparent 100%)",
+            }}
+          >
+            <span className="font-display text-[15vw] font-black uppercase tracking-tighter leading-none block whitespace-nowrap bg-gradient-to-b from-white via-[#FF7048] to-[#E0432B] bg-clip-text text-transparent filter drop-shadow-[0_0_30px_rgba(224,67,43,0.95)] drop-shadow-[0_0_60px_rgba(255,112,72,0.5)]">
+              {SITE_NAME}
+            </span>
+          </div>
         </div>
 
         {/* Bottom Utility Bar */}
