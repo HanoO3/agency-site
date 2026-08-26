@@ -25,8 +25,8 @@ export default function TextPressure({
   italic = false,
   alpha = false,
   minFontSize = 42,
-  textColor = "rgba(255, 255, 255, 0.95)",
-  strokeColor = "#E0432B",
+  textColor = "rgba(245, 245, 247, 0.95)",
+  strokeColor = "rgba(224, 67, 43, 0.35)",
   className = "",
 }: TextPressureProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,7 +39,7 @@ export default function TextPressure({
 
   const chars = text.split("");
 
-  // Smooth mouse movement with damping
+  // Smooth mouse tracking with damping
   const handleMouseMove = useCallback((e: MouseEvent) => {
     cursorRef.current.x = e.clientX;
     cursorRef.current.y = e.clientY;
@@ -72,9 +72,9 @@ export default function TextPressure({
     let autoTime = 0;
 
     const loop = () => {
-      autoTime += 0.025;
+      autoTime += 0.02;
 
-      // Smooth damped lerp towards target mouse position
+      // Smooth damped lerp towards target pointer position
       mouseRef.current.x += (cursorRef.current.x - mouseRef.current.x) * 0.09;
       mouseRef.current.y += (cursorRef.current.y - mouseRef.current.y) * 0.09;
 
@@ -82,16 +82,16 @@ export default function TextPressure({
         const titleRect = titleRef.current.getBoundingClientRect();
         const hasPointer = cursorRef.current.x > 0 && cursorRef.current.y > 0;
 
-        // Auto-orbit idle wave if mouse is outside
+        // Gentle idle wave if mouse is outside
         const effectiveMouseX = hasPointer
           ? mouseRef.current.x
-          : titleRect.left + titleRect.width * (0.5 + 0.4 * Math.sin(autoTime));
+          : titleRect.left + titleRect.width * (0.5 + 0.35 * Math.sin(autoTime));
 
         const effectiveMouseY = hasPointer
           ? mouseRef.current.y
-          : titleRect.top + titleRect.height * (0.5 + 0.3 * Math.cos(autoTime * 0.8));
+          : titleRect.top + titleRect.height * (0.5 + 0.25 * Math.cos(autoTime * 0.7));
 
-        const maxDist = titleRect.width * 0.45;
+        const maxDist = titleRect.width * 0.38;
 
         spansRef.current.forEach((span) => {
           if (!span) return;
@@ -107,35 +107,37 @@ export default function TextPressure({
             effectiveMouseY - charCenter.y
           );
 
-          // Proximity factor (0 to 1)
+          // Proximity factor (0 to 1) with cubic ease
           const norm = Math.max(0, Math.min(1, 1 - d / maxDist));
-          const ease = norm * norm * (3 - 2 * norm); // Smooth cubic ease
+          const ease = norm * norm * (3 - 2 * norm);
 
-          // Variable font settings
-          const wght = weight ? Math.round(100 + (900 - 100) * ease) : 400;
-          const wdth = width ? Math.round(40 + (135 - 40) * ease) : 100;
-          const ital = italic ? (ease * 0.4).toFixed(2) : "0";
+          // 1. Google Font "Roboto Flex" Variable Settings:
+          // Default: very thin (wght: 120, wdth: 50)
+          // Hover near letter: very bold (wght: 880, wdth: 130)
+          const wght = weight ? Math.round(120 + (880 - 120) * ease) : 200;
+          const wdth = width ? Math.round(50 + (130 - 50) * ease) : 55;
+          const ital = italic ? (ease * 0.3).toFixed(2) : "0";
 
-          span.style.fontVariationSettings = `'wght' ${wght}, 'wdth' ${wdth}, 'ital' ${ital}`;
+          span.style.fontVariationSettings = `'wght' ${wght}, 'wdth' ${wdth}, 'ital' ${ital}, 'opsz' 144`;
 
-          // Dynamic scale, lift, and specular brightness
-          const charScaleY = 1 + ease * 0.18;
-          const charScaleX = 1 + ease * 0.12;
-          const charY = -ease * 22;
+          // 2. Proximity Lift & Subtle Scale (max 1.10)
+          const charScaleY = 1 + ease * 0.10;
+          const charScaleX = 1 + ease * 0.08;
+          const charY = -ease * 14;
 
           span.style.transform = `translate3d(0, ${charY}px, 0) scale(${charScaleX}, ${charScaleY})`;
 
           if (alpha) {
-            span.style.opacity = (0.45 + ease * 0.55).toString();
+            span.style.opacity = (0.75 + ease * 0.25).toString();
           } else {
             span.style.opacity = "1";
           }
 
-          // Dynamic glowing red-orange specular reflection on hovered letters
-          if (ease > 0.35) {
-            span.style.filter = `drop-shadow(0 0 ${ease * 25}px rgba(224, 67, 43, ${ease * 0.9})) drop-shadow(0 0 ${ease * 50}px rgba(255, 112, 72, ${ease * 0.5}))`;
+          // 3. Soft, Elegant Red Glow (Not heavy neon)
+          if (ease > 0.25) {
+            span.style.filter = `drop-shadow(0 0 ${ease * 14}px rgba(224, 67, 43, ${ease * 0.50})) drop-shadow(0 0 ${ease * 26}px rgba(255, 112, 72, ${ease * 0.22}))`;
           } else {
-            span.style.filter = "drop-shadow(0 0 15px rgba(224, 67, 43, 0.18))";
+            span.style.filter = "drop-shadow(0 0 5px rgba(224, 67, 43, 0.06))";
           }
         });
       }
@@ -158,10 +160,12 @@ export default function TextPressure({
       ref={containerRef}
       className={`relative w-full h-full flex items-center justify-center select-none overflow-visible ${className}`}
       style={{
-        fontFamily: "var(--font-roboto-flex), 'Space Grotesk', sans-serif",
+        fontFamily: "var(--font-roboto-flex), 'Roboto Flex', sans-serif",
       }}
     >
       <style jsx global>{`
+        @import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap");
+
         .tp-flex {
           display: flex;
           justify-content: space-between;
@@ -172,7 +176,7 @@ export default function TextPressure({
 
         .tp-stroke span {
           position: relative;
-          color: rgba(255, 255, 255, 0.95);
+          color: rgba(245, 245, 247, 0.95);
         }
 
         .tp-stroke span::after {
@@ -182,8 +186,8 @@ export default function TextPressure({
           top: 0;
           color: transparent;
           z-index: -1;
-          -webkit-text-stroke-width: 2.5px;
-          -webkit-text-stroke-color: rgba(224, 67, 43, 0.55);
+          -webkit-text-stroke-width: 1px;
+          -webkit-text-stroke-color: rgba(224, 67, 43, 0.35);
         }
       `}</style>
 
@@ -193,7 +197,7 @@ export default function TextPressure({
           stroke ? "tp-stroke" : ""
         } uppercase tracking-tighter`}
         style={{
-          fontFamily: "var(--font-roboto-flex), 'Space Grotesk', sans-serif",
+          fontFamily: "var(--font-roboto-flex), 'Roboto Flex', sans-serif",
           fontSize: fontSize ? `${fontSize}px` : "clamp(3.5rem, 12.5vw, 9.5rem)",
           lineHeight: 1,
           transform: "scale(1, 1.12)",
@@ -202,7 +206,7 @@ export default function TextPressure({
           textAlign: "center",
           userSelect: "none",
           whiteSpace: "nowrap",
-          fontWeight: 100,
+          fontWeight: 120,
           width: "100%",
           opacity: 1,
           visibility: "visible",

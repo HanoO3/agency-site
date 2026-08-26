@@ -167,7 +167,7 @@ export default function Hero() {
       {/* Outer Parallax Wrapper (GSAP ScrollTrigger handles y & opacity cleanly on scroll) */}
       <div
         ref={titleParallaxRef}
-        className="relative z-10 w-full max-w-[720px] md:max-w-[920px] lg:max-w-[1150px] mx-auto flex flex-col items-center justify-center my-auto py-6 overflow-visible drop-shadow-[0_0_40px_rgba(224,67,43,0.3)] opacity-100 will-change-transform"
+        className="relative z-10 w-full max-w-[720px] md:max-w-[920px] lg:max-w-[1150px] mx-auto flex flex-col items-center justify-center my-auto py-6 overflow-visible drop-shadow-[0_0_20px_rgba(224,67,43,0.12)] opacity-100 will-change-transform"
       >
         {/* Inner Tilt Wrapper (3D Mouse Perspective Tilt) */}
         <div
