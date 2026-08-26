@@ -2,10 +2,12 @@ export const SITE_NAME = "Cartcode";
 export const SITE_TAGLINE = "We build digital experiences that move.";
 
 export const NAV_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "Home", href: "/#hero" },
+  { label: "Services", href: "/#services" },
+  { label: "Work", href: "/#work" },
+  { label: "About", href: "/#about" },
+  { label: "Our Team", href: "/#team" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export const SOCIAL_LINKS = [

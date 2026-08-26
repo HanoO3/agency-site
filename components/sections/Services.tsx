@@ -7,85 +7,76 @@ export default function Services() {
   return (
     <section
       id="services"
-      className="relative w-full bg-[#05050A] py-32 md:py-44 px-6 z-10 overflow-hidden"
+      className="relative w-full bg-[#05050A] py-24 md:py-40 px-6 md:px-12 z-10 overflow-hidden"
     >
       {/* Background Volumetric Ember Rim Glow */}
-      <div className="absolute right-[-5%] top-1/2 -translate-y-1/2 w-[650px] h-[650px] rounded-full bg-[radial-gradient(circle_at_center,rgba(224,67,43,0.09)_0%,rgba(5,5,10,0)_70%)] blur-[140px] pointer-events-none -z-10" />
+      <div className="absolute right-[-10%] top-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[radial-gradient(circle_at_center,rgba(224,67,43,0.08)_0%,transparent_70%)] blur-[140px] pointer-events-none -z-10" />
+      <div className="absolute left-[-10%] bottom-1/4 w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle_at_center,rgba(224,67,43,0.05)_0%,transparent_70%)] blur-[140px] pointer-events-none -z-10" />
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1400px] mx-auto">
         {/* Section Header */}
         <ScrollReveal y={30}>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-16 border-b border-white/10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-[#F4F1EC]/10">
             <div>
-              <p className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#E0432B] mb-3 font-mono font-medium">
+              <p className="text-xs uppercase tracking-[0.25em] text-[#E0432B] mb-3 font-mono font-medium">
                 Capabilities
               </p>
-              <h2 className="font-display text-3xl sm:text-5xl md:text-6xl font-semibold uppercase tracking-tight text-[#F5F5F7] leading-[1.05]">
+              <h2 className="font-display text-3xl sm:text-5xl md:text-6xl font-light uppercase tracking-tight text-[#F4F1EC] leading-[1.05]">
                 Core Practice Areas
               </h2>
             </div>
-            <p className="text-xs sm:text-sm font-mono text-white/40 max-w-xs uppercase tracking-widest leading-relaxed">
-              Engineered for modern digital impact & performance.
+            <p className="text-sm font-normal text-[#8A8A93] max-w-xs leading-relaxed">
+              Engineered for modern digital impact, craft, and performance.
             </p>
           </div>
         </ScrollReveal>
 
-        {/* Editorial Services List */}
-        <div className="divide-y divide-white/10 mt-2">
-          {services.map((service, idx) => {
-            return (
-              <ScrollReveal key={service.slug} delay={idx * 0.08} y={35}>
-                <div className="group relative py-10 md:py-14 px-4 md:px-8 transition-all duration-500 cursor-pointer overflow-hidden rounded-xl hover:bg-white/[0.015]">
-                  {/* Warm Ember Light Sweep Effect on Hover */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#E0432B]/[0.08] to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
+        {/* All Capabilities Cards Grid with Progressive Hover & Micro-interactions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12">
+          {services.map((service, idx) => (
+            <ScrollReveal key={service.slug} delay={idx * 0.07} y={30}>
+              <div className="group relative p-8 sm:p-10 rounded-2xl bg-[#F4F1EC]/[0.015] border border-[#F4F1EC]/10 transition-all duration-500 ease-out hover:-translate-y-1.5 hover:border-[#E0432B]/40 hover:bg-[#F4F1EC]/[0.025] hover:shadow-[0_10px_35px_rgba(224,67,43,0.12)] flex flex-col justify-between min-h-[280px] overflow-hidden">
+                {/* Radial Glow Highlight on Hover */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle_at_top_right,rgba(224,67,43,0.15),transparent_70%)] rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-                  {/* Subtle Ember Left Border Indicator */}
-                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#E0432B] opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-[0_0_15px_#E0432B]" />
+                <div>
+                  {/* Card Top: Number & Category */}
+                  <div className="flex items-center justify-between pb-5 border-b border-[#F4F1EC]/5">
+                    <span className="text-xs font-mono text-[#8A8A93] group-hover:text-[#E0432B] transition-colors duration-300">
+                      {service.number}
+                    </span>
+                    <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[#E0432B]">
+                      {service.category}
+                    </span>
+                  </div>
 
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
-                    {/* Left Column: Number & Large Service Title */}
-                    <div className="flex items-start md:items-center gap-6 md:gap-12">
-                      <span className="text-xs md:text-sm font-mono text-[#E0432B]/70 tracking-widest group-hover:text-[#E0432B] group-hover:scale-105 transition-all duration-300 font-medium pt-1.5 md:pt-0">
-                        {service.number}
-                      </span>
-                      <div>
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-display text-xl sm:text-3xl md:text-4xl lg:text-[2.5rem] font-semibold uppercase tracking-[-0.02em] text-[#F5F5F7] group-hover:text-white group-hover:translate-x-2.5 transition-all duration-300 leading-tight">
-                            {service.title}
-                          </h3>
-                          <span className="opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300 text-[#E0432B] font-mono text-lg md:text-xl hidden sm:inline-block">
-                            →
-                          </span>
-                        </div>
-                        <p className="text-[11px] uppercase tracking-[0.22em] text-[#E0432B]/85 font-mono mt-1.5 font-medium">
-                          {service.category}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Right Column: Description & Deliverables Tags */}
-                    <div className="max-w-xl lg:text-right flex flex-col lg:items-end gap-3.5">
-                      <p className="text-sm md:text-base text-[#F5F5F7]/65 font-light leading-relaxed group-hover:text-[#F5F5F7]/95 transition-colors duration-300">
-                        {service.description}
-                      </p>
-
-                      {/* Deliverables pill tags */}
-                      <div className="flex flex-wrap lg:justify-end gap-2 pt-1">
-                        {(service.deliverables ?? []).map((item, dIdx) => (
-                          <span
-                            key={dIdx}
-                            className="text-[10px] uppercase font-mono tracking-wider px-3 py-1 rounded-full border border-white/10 bg-white/[0.02] text-white/50 group-hover:border-[#E0432B]/40 group-hover:text-white/90 group-hover:bg-[#E0432B]/[0.04] transition-all duration-300"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+                  {/* Card Title & Description */}
+                  <div className="pt-5">
+                    <h3 className="font-display text-xl sm:text-2xl font-light uppercase tracking-tight text-[#F4F1EC] mb-2.5 group-hover:text-white transition-colors duration-300">
+                      {service.title}
+                    </h3>
+                    <p className="text-sm text-[#8A8A93] leading-relaxed font-normal group-hover:text-[#F4F1EC]/80 transition-colors duration-300">
+                      {service.description}
+                    </p>
                   </div>
                 </div>
-              </ScrollReveal>
-            );
-          })}
+
+                {/* Deliverables pill tags */}
+                {service.deliverables && (
+                  <div className="flex flex-wrap gap-2 pt-6 mt-4 border-t border-[#F4F1EC]/5">
+                    {service.deliverables.map((item, dIdx) => (
+                      <span
+                        key={dIdx}
+                        className="text-[10px] uppercase font-mono tracking-wider px-2.5 py-1 rounded-full border border-[#F4F1EC]/10 bg-[#F4F1EC]/[0.02] text-[#8A8A93] group-hover:border-[#E0432B]/30 group-hover:text-[#F4F1EC] transition-all duration-300"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </ScrollReveal>
+          ))}
         </div>
       </div>
     </section>

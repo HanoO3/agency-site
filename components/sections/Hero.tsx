@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "@/lib/gsap";
-import { SITE_NAME } from "@/lib/constants";
+import { SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
 import HeroCanvas from "@/components/three/HeroCanvas";
 import TextPressure from "@/components/ui/TextPressure";
 
@@ -21,7 +21,7 @@ export default function Hero() {
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    // Mouse tracking for fluid smoke haze & 3D tilt
+    // Mouse tracking for fluid soft ambient haze & 3D tilt
     let mouseX = typeof window !== "undefined" ? window.innerWidth / 2 : 0;
     let mouseY = typeof window !== "undefined" ? window.innerHeight / 2 : 0;
     let currentSmokeX = mouseX;
@@ -38,23 +38,21 @@ export default function Hero() {
 
       if (sectionRef.current) {
         const rect = sectionRef.current.getBoundingClientRect();
-        targetTiltX = ((e.clientY - rect.top) / rect.height - 0.5) * -12;
-        targetTiltY = ((e.clientX - rect.left) / rect.width - 0.5) * 15;
+        targetTiltX = ((e.clientY - rect.top) / rect.height - 0.5) * -8;
+        targetTiltY = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
       }
     };
 
     const renderLoop = () => {
-      // Smooth damped lerp for volumetric smoke aura
-      currentSmokeX += (mouseX - currentSmokeX) * 0.07;
-      currentSmokeY += (mouseY - currentSmokeY) * 0.07;
+      currentSmokeX += (mouseX - currentSmokeX) * 0.05;
+      currentSmokeY += (mouseY - currentSmokeY) * 0.05;
 
       if (ambientSmokeRef.current) {
         ambientSmokeRef.current.style.transform = `translate3d(${currentSmokeX}px, ${currentSmokeY}px, 0) translate(-50%, -50%)`;
       }
 
-      // Smooth 3D tilt on separate inner title container (no conflict with GSAP parallax)
-      currentTiltX += (targetTiltX - currentTiltX) * 0.06;
-      currentTiltY += (targetTiltY - currentTiltY) * 0.06;
+      currentTiltX += (targetTiltX - currentTiltX) * 0.05;
+      currentTiltY += (targetTiltY - currentTiltY) * 0.05;
 
       if (titleTiltRef.current && window.innerWidth >= 768 && !prefersReducedMotion) {
         titleTiltRef.current.style.transform = `perspective(1200px) rotateX(${currentTiltX}deg) rotateY(${currentTiltY}deg)`;
@@ -72,9 +70,8 @@ export default function Hero() {
     const ctx = gsap.context(() => {
       if (sectionRef.current && titleParallaxRef.current) {
         gsap.to(titleParallaxRef.current, {
-          y: -130,
-          opacity: 0.15,
-          filter: "blur(6px)",
+          y: -110,
+          opacity: 0.2,
           ease: "none",
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -87,9 +84,8 @@ export default function Hero() {
 
         if (canvasContainerRef.current) {
           gsap.to(canvasContainerRef.current, {
-            y: 90,
-            scale: 1.08,
-            opacity: 0.2,
+            y: 70,
+            opacity: 0.25,
             ease: "none",
             scrollTrigger: {
               trigger: sectionRef.current,
@@ -102,7 +98,7 @@ export default function Hero() {
 
         if (contentRef.current) {
           gsap.to(contentRef.current, {
-            y: -60,
+            y: -50,
             opacity: 0,
             ease: "none",
             scrollTrigger: {
@@ -127,9 +123,9 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative min-h-screen w-full flex flex-col items-center justify-between overflow-hidden bg-[#05050A] select-none pt-24 pb-12 px-4 sm:px-6 md:px-12"
+      className="relative min-h-screen w-full flex flex-col justify-between overflow-hidden bg-[#05050A] select-none py-24 md:py-40 px-6 md:px-12"
     >
-      {/* 3D Atmospheric Canvas (Particles & Fluid Ambient Light) */}
+      {/* 3D Atmospheric Background Canvas */}
       <div
         ref={canvasContainerRef}
         className="absolute inset-0 w-full h-full z-0 pointer-events-none"
@@ -137,107 +133,112 @@ export default function Hero() {
         <HeroCanvas />
       </div>
 
-      {/* Floating Volumetric Red Smoke Haze Orb Tracking Mouse (Subtle & Decent) */}
+      {/* Soft, wide, low-opacity haze behind text (blur ~140px, opacity ~0.25) */}
       <div
         ref={ambientSmokeRef}
-        className="fixed top-0 left-0 w-[500px] h-[500px] md:w-[680px] md:h-[680px] rounded-full pointer-events-none z-0 transition-opacity duration-700 will-change-transform opacity-30"
+        className="fixed top-0 left-0 w-[550px] h-[550px] md:w-[750px] md:h-[750px] rounded-full pointer-events-none z-0 transition-opacity duration-700 will-change-transform opacity-25"
         style={{
           background:
-            "radial-gradient(circle, rgba(224,67,43,0.16) 0%, rgba(255,112,72,0.08) 35%, rgba(122,31,23,0.03) 60%, transparent 75%)",
-          filter: "blur(90px)",
+            "radial-gradient(circle, rgba(224,67,43,0.18) 0%, rgba(122,31,23,0.06) 45%, transparent 70%)",
+          filter: "blur(140px)",
         }}
       />
 
-      {/* Subtle Static Center Base Ember Haze */}
-      <div className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] pointer-events-none z-0 bg-[radial-gradient(circle,rgba(224,67,43,0.10)_0%,rgba(122,31,23,0.03)_40%,transparent_75%)] blur-[100px]" />
+      {/* Static Center Subtle Base Haze */}
+      <div className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] md:w-[900px] md:h-[900px] pointer-events-none z-0 bg-[radial-gradient(circle,rgba(224,67,43,0.08)_0%,transparent_70%)] blur-[140px] opacity-25" />
 
-      {/* Top Status Pill / Subtag */}
-      <div
-        ref={subtagRef}
-        className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between pt-2 opacity-100"
-      >
-        <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.02] backdrop-blur-md">
-          <span className="w-2 h-2 rounded-full bg-[#E0432B] animate-pulse shadow-[0_0_10px_#E0432B]" />
-          <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.3em] text-white/80 font-medium">
-            Shipping Ideas Into Reality.
-          </span>
-        </div>
-      </div>
-
-      {/* Outer Parallax Wrapper (GSAP ScrollTrigger handles y & opacity cleanly on scroll) */}
-      <div
-        ref={titleParallaxRef}
-        className="relative z-10 w-full max-w-[720px] md:max-w-[920px] lg:max-w-[1150px] mx-auto flex flex-col items-center justify-center my-auto py-6 overflow-visible drop-shadow-[0_0_20px_rgba(224,67,43,0.12)] opacity-100 will-change-transform"
-      >
-        {/* Inner Tilt Wrapper (3D Mouse Perspective Tilt) */}
+      {/* Main Hero Container */}
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto flex flex-col justify-between h-full flex-grow gap-12">
+        {/* Top Status Pill / Subtag */}
         <div
-          ref={titleTiltRef}
-          className="w-full flex flex-col items-center justify-center overflow-visible transition-transform duration-150 ease-out"
+          ref={subtagRef}
+          className="w-full flex items-center justify-between opacity-100"
         >
-          {/* Kinetic Variable Typography */}
-          <div className="w-full h-[110px] sm:h-[140px] md:h-[180px] lg:h-[220px] relative flex items-center justify-center scale-y-[1.12] transform-gpu">
-            <TextPressure
-              text={SITE_NAME}
-              flex={true}
-              stroke={true}
-              width={true}
-              weight={true}
-              italic={false}
-              alpha={false}
-              minFontSize={42}
-              textColor="rgba(255, 255, 255, 0.95)"
-              strokeColor="#E0432B"
-            />
+          <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-[#8A8A93]/20 bg-[#F4F1EC]/[0.02] backdrop-blur-md">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E0432B] shadow-[0_0_8px_#E0432B]" />
+            <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#8A8A93] font-normal">
+              Shipping Ideas Into Reality.
+            </span>
           </div>
+        </div>
 
-          {/* Central Red-Orange Tagline directly under letters */}
-          <div className="mt-4 sm:mt-6 text-center z-20">
-            <p className="hero-line text-[clamp(0.72rem,1.1vw,0.95rem)] font-extrabold tracking-[0.3em] uppercase text-[#E0432B] drop-shadow-[0_0_22px_rgba(224,67,43,0.85)] font-mono">
+        {/* Center Title & Tagline Hierarchy */}
+        <div
+          ref={titleParallaxRef}
+          className="w-full flex flex-col items-center justify-center my-auto py-4 overflow-visible opacity-100 will-change-transform"
+        >
+          <div
+            ref={titleTiltRef}
+            className="w-full flex flex-col items-center justify-center overflow-visible transition-transform duration-150 ease-out"
+          >
+            {/* Tagline in glowing ember red color */}
+            <p className="text-xs sm:text-[13px] font-mono font-medium uppercase tracking-[0.25em] text-[#E0432B] drop-shadow-[0_0_18px_rgba(224,67,43,0.7)] mb-6 text-center">
               Crafting Interfaces That People Remember.
             </p>
+
+            {/* Headline: thin/elegant (weight 200-300), tight leading-[0.9], slight negative letter-spacing */}
+            <div className="w-full max-w-[1050px] h-[100px] sm:h-[135px] md:h-[165px] lg:h-[195px] relative flex items-center justify-center">
+              <TextPressure
+                text={SITE_NAME}
+                flex={true}
+                stroke={false}
+                width={true}
+                weight={true}
+                italic={false}
+                alpha={false}
+                minFontSize={36}
+                textColor="#F4F1EC"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Editorial Content & Magnetic Actions */}
-      <div
-        ref={contentRef}
-        className="relative z-10 w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 pt-6 opacity-100"
-      >
-        {/* Left Studio Bio */}
-        <p className="text-white/60 max-w-sm text-xs sm:text-sm leading-relaxed font-light tracking-wide text-center md:text-left">
-          Creative Technology Studio engineering fast, immersive, and motion-driven digital products.
-        </p>
+        {/* Bottom Editorial Content & Button Hierarchy */}
+        <div
+          ref={contentRef}
+          className="w-full flex flex-col md:flex-row items-center md:items-end justify-between gap-8 pt-4 opacity-100"
+        >
+          {/* Left description text: text-base, leading-relaxed, max-w-md, ~70% foreground */}
+          <p className="text-base text-[#F4F1EC]/70 max-w-md leading-relaxed font-normal text-center md:text-left">
+            {SITE_TAGLINE}
+          </p>
 
-        {/* Right CTA Action Buttons */}
-        <div className="flex items-center gap-4 flex-shrink-0">
-          <Link
-            href="/contact"
-            className="group relative rounded-full bg-[#E0432B] px-7 py-3.5 text-xs font-mono uppercase tracking-[0.25em] text-white transition-all duration-300 hover:bg-[#FF7048] hover:shadow-[0_0_35px_rgba(224,67,43,0.45)] hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
-          >
-            <span className="relative z-10 flex items-center gap-3">
-              Explore Work
-              <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5 font-mono">
-                →
-              </span>
-            </span>
-          </Link>
+          {/* Right Action Buttons: Explore Work -> #work, Let's Talk -> #contact */}
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 flex-shrink-0">
+            <Link
+              href="/#work"
+              onClick={(e) => {
+                if (typeof window !== "undefined" && window.location.pathname === "/") {
+                  const el = document.getElementById("work");
+                  if (el) {
+                    e.preventDefault();
+                    el.scrollIntoView({ behavior: "smooth" });
+                  }
+                }
+              }}
+              className="inline-flex items-center justify-center rounded-full bg-[#E0432B] px-8 py-3.5 text-xs font-mono uppercase tracking-[0.2em] text-[#05050A] font-semibold transition-all duration-300 hover:bg-[#FF7048] hover:shadow-[0_0_25px_rgba(224,67,43,0.35)] active:scale-[0.98] cursor-pointer"
+            >
+              <span>Explore Work</span>
+              <span className="ml-2.5 font-mono">→</span>
+            </Link>
 
-          <Link
-            href="/services"
-            className="rounded-full border border-white/15 px-6 py-3.5 text-xs font-mono uppercase tracking-[0.25em] text-[#F5F5F7]/80 backdrop-blur-md transition-all duration-300 hover:border-[#E0432B]/50 hover:bg-white/[0.04] hover:text-white hover:scale-[1.03] active:scale-[0.98]"
-          >
-            Let&apos;s Talk →
-          </Link>
+            <Link
+              href="/#contact"
+              onClick={(e) => {
+                if (typeof window !== "undefined" && window.location.pathname === "/") {
+                  const el = document.getElementById("contact");
+                  if (el) {
+                    e.preventDefault();
+                    el.scrollIntoView({ behavior: "smooth" });
+                  }
+                }
+              }}
+              className="inline-flex items-center justify-center rounded-full border border-[#8A8A93]/30 bg-transparent px-8 py-3.5 text-xs font-mono uppercase tracking-[0.2em] text-[#F4F1EC] transition-all duration-300 hover:bg-[#F4F1EC]/[0.05] hover:border-[#F4F1EC]/50 active:scale-[0.98] cursor-pointer"
+            >
+              Let&apos;s Talk →
+            </Link>
+          </div>
         </div>
-      </div>
-
-      {/* Minimal Scroll Pill Indicator */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 pointer-events-none opacity-40">
-        <span className="text-[8px] uppercase tracking-[0.35em] text-[#F5F5F7]/50 font-mono">
-          Scroll
-        </span>
-        <div className="w-[1px] h-5 bg-gradient-to-b from-[#E0432B] to-transparent animate-pulse" />
       </div>
     </section>
   );

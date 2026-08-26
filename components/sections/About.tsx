@@ -6,99 +6,75 @@ import CountUp from "@/components/animations/CountUp";
 export default function About() {
   const stats = [
     { number: "40+", label: "Projects Delivered" },
-    { number: "6+", label: "Years Combined Experience" },
+    { number: "6+", label: "Years Experience" },
     { number: "25+", label: "Happy Clients" },
+  ];
+
+  const supportingPoints = [
+    {
+      title: "Engineering Precision",
+      description: "Clean code architecture, high performance, and future-proof scalability.",
+    },
+    {
+      title: "Design Intuition",
+      description: "Motion-driven interfaces, custom spatial interactions, and unforgettable brand touchpoints.",
+    },
+    {
+      title: "Business Impact",
+      description: "Clear communication, realistic timelines, and digital products engineered to convert.",
+    },
   ];
 
   return (
     <section
       id="about"
-      className="relative w-full bg-[#05050A] py-32 md:py-44 px-6 z-10 overflow-hidden"
+      className="relative w-full bg-[#05050A] py-24 md:py-40 px-6 md:px-12 z-10 overflow-hidden"
     >
-      {/* Background Volumetric Ember Rim Glow */}
-      <div className="absolute right-[-15%] top-1/2 -translate-y-1/2 w-[750px] h-[750px] rounded-full bg-[radial-gradient(circle_at_center,rgba(224,67,43,0.14)_0%,rgba(122,31,23,0.06)_45%,rgba(5,5,10,0)_75%)] blur-[150px] pointer-events-none -z-10" />
+      {/* Very subtle ember radial glow, low opacity */}
+      <div className="absolute right-[-10%] top-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[radial-gradient(circle_at_center,rgba(224,67,43,0.06)_0%,transparent_70%)] blur-[150px] pointer-events-none -z-10" />
 
-      {/* Abstract Metallic Wire Ring Backdrop SVG */}
-      <div className="absolute right-[-5%] top-1/4 w-[500px] h-[500px] opacity-15 pointer-events-none -z-10 animate-[spin_60s_linear_infinite]">
-        <svg viewBox="0 0 200 200" className="w-full h-full text-[#E0432B]">
-          <circle
-            cx="100"
-            cy="100"
-            r="90"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="0.5"
-            strokeDasharray="4 4"
-          />
-          <polygon
-            points="100,10 180,150 20,150"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="0.5"
-          />
-          <circle
-            cx="100"
-            cy="100"
-            r="60"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="0.25"
-          />
-        </svg>
-      </div>
-
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1400px] mx-auto">
         {/* Section Tag */}
         <ScrollReveal y={30}>
-          <p className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#E0432B] mb-6 font-mono font-medium">
+          <p className="text-xs uppercase tracking-[0.2em] text-[#8A8A93] mb-4 font-mono">
             About Us
           </p>
         </ScrollReveal>
 
-        {/* Manifesto Large Body Text with Editorial Line-by-Line Reveal */}
-        <ScrollReveal delay={0.1} y={45}>
-          <h2 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#F5F5F7] uppercase leading-[1.08] tracking-tight max-w-5xl">
-            We&apos;re a small team that builds{" "}
-            <span className="text-[#E0432B] italic">fast, thoughtful</span>{" "}
-            digital products.
+        {/* One Strong Statement */}
+        <ScrollReveal delay={0.08} y={35}>
+          <h2 className="font-display text-3xl sm:text-5xl md:text-6xl font-light text-[#F4F1EC] uppercase leading-[1.05] tracking-tight max-w-4xl">
+            We&apos;re a creative technology studio building{" "}
+            <span className="text-[#E0432B]">fast, thoughtful</span> digital products.
           </h2>
         </ScrollReveal>
 
-        {/* Sub-Manifesto Paragraphs (Original Copy Preserved) */}
-        <div className="mt-14 max-w-3xl space-y-6">
-          <ScrollReveal delay={0.2} y={30}>
-            <p className="text-base md:text-lg text-white/70 font-light leading-relaxed">
-              We started this agency to work with businesses who care about craft
-              — clean code, thoughtful design, and interfaces that feel alive.
-              Whether it&apos;s a marketing site, a full e-commerce store, or an
-              interactive product experience, we treat every project like
-              it&apos;s going to be someone&apos;s favorite thing they&apos;ve
-              launched.
-            </p>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.28} y={30}>
-            <p className="text-sm md:text-base text-white/50 font-light leading-relaxed border-l-2 border-[#E0432B]/60 pl-6">
-              Every project starts with understanding what actually moves the
-              needle for your business — not just what looks good. We keep
-              communication tight, timelines realistic, and code clean enough
-              that it&apos;s easy to hand off or build on later.
-            </p>
-          </ScrollReveal>
+        {/* 2–3 Supporting Points Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 pt-12 border-t border-[#F4F1EC]/10">
+          {supportingPoints.map((point, i) => (
+            <ScrollReveal key={i} delay={0.15 + i * 0.08} y={30}>
+              <div className="p-8 rounded-2xl bg-[#F4F1EC]/[0.015] border border-[#F4F1EC]/10">
+                <span className="w-2 h-2 rounded-full bg-[#E0432B] inline-block mb-4" />
+                <h3 className="font-display text-xl font-light uppercase text-[#F4F1EC] mb-2 tracking-tight">
+                  {point.title}
+                </h3>
+                <p className="text-sm text-[#8A8A93] leading-relaxed font-normal">
+                  {point.description}
+                </p>
+              </div>
+            </ScrollReveal>
+          ))}
         </div>
 
-        {/* Animated Statistics Counter Grid with Scale Entrance */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-12 mt-24 pt-16 border-t border-white/10">
+        {/* Animated Statistics Counter Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 mt-12">
           {stats.map((stat, i) => (
-            <ScrollReveal key={i} delay={0.3 + i * 0.1} y={35}>
-              <div className="group relative p-8 md:p-10 rounded-2xl bg-white/[0.015] border border-white/10 hover:border-[#E0432B]/40 hover:bg-white/[0.03] transition-all duration-500 transform hover:scale-[1.02]">
-                <div className="absolute top-0 right-0 w-20 h-20 bg-[radial-gradient(circle_at_top_right,rgba(224,67,43,0.18),transparent)] rounded-tr-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                <p className="font-display text-5xl sm:text-6xl md:text-7xl font-black text-[#F5F5F7] tracking-tight group-hover:text-white transition-colors duration-300">
-                  <CountUp value={stat.number} duration={2.4} />
+            <ScrollReveal key={i} delay={0.25 + i * 0.08} y={30}>
+              <div className="p-8 md:p-10 rounded-2xl bg-[#F4F1EC]/[0.015] border border-[#F4F1EC]/10">
+                <p className="font-display text-4xl sm:text-5xl md:text-6xl font-light text-[#F4F1EC] tracking-tight">
+                  <CountUp value={stat.number} duration={2.2} />
                 </p>
-
-                <p className="text-xs uppercase tracking-[0.25em] text-[#E0432B] font-mono mt-4 font-medium">
+                <p className="text-xs uppercase tracking-[0.2em] text-[#8A8A93] font-mono mt-3">
                   {stat.label}
                 </p>
               </div>
