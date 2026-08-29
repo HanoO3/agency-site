@@ -133,10 +133,10 @@ export default function Hero() {
         <HeroCanvas />
       </div>
 
-      {/* Soft, wide, low-opacity haze behind text (blur ~140px, opacity ~0.25) */}
+      {/* Soft, wide, low-opacity haze behind text */}
       <div
         ref={ambientSmokeRef}
-        className="fixed top-0 left-0 w-[550px] h-[550px] md:w-[750px] md:h-[750px] rounded-full pointer-events-none z-0 transition-opacity duration-700 will-change-transform opacity-25"
+        className="hidden md:block absolute top-0 left-0 w-[550px] h-[550px] md:w-[750px] md:h-[750px] rounded-full pointer-events-none z-0 transition-opacity duration-700 will-change-transform opacity-25"
         style={{
           background:
             "radial-gradient(circle, rgba(224,67,43,0.18) 0%, rgba(122,31,23,0.06) 45%, transparent 70%)",
@@ -145,7 +145,8 @@ export default function Hero() {
       />
 
       {/* Static Center Subtle Base Haze */}
-      <div className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] md:w-[900px] md:h-[900px] pointer-events-none z-0 bg-[radial-gradient(circle,rgba(224,67,43,0.08)_0%,transparent_70%)] blur-[140px] opacity-25" />
+      <div className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[900px] md:h-[900px] pointer-events-none z-0 bg-[radial-gradient(circle,rgba(224,67,43,0.08)_0%,transparent_70%)] blur-[120px] opacity-25" />
+
 
       {/* Main Hero Container */}
       <div className="relative z-10 w-full max-w-[1400px] mx-auto flex flex-col justify-between h-full flex-grow gap-12">

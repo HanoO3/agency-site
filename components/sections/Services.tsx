@@ -32,12 +32,13 @@ export default function Services() {
         </ScrollReveal>
 
         {/* All Capabilities Cards Grid with Progressive Hover & Micro-interactions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12 items-stretch">
           {services.map((service, idx) => (
-            <ScrollReveal key={service.slug} delay={idx * 0.07} y={30}>
-              <div className="group relative p-8 sm:p-10 rounded-2xl bg-[#F4F1EC]/[0.015] border border-[#F4F1EC]/10 transition-all duration-500 ease-out hover:-translate-y-1.5 hover:border-[#E0432B]/40 hover:bg-[#F4F1EC]/[0.025] hover:shadow-[0_10px_35px_rgba(224,67,43,0.12)] flex flex-col justify-between min-h-[280px] overflow-hidden">
+            <ScrollReveal key={service.slug} delay={idx * 0.07} y={30} className="h-full">
+              <div className="group relative h-full p-8 sm:p-10 rounded-2xl bg-[#F4F1EC]/[0.015] border border-[#F4F1EC]/10 transition-all duration-500 ease-out hover:-translate-y-1.5 hover:border-[#E0432B]/40 hover:bg-[#F4F1EC]/[0.025] hover:shadow-[0_10px_35px_rgba(224,67,43,0.12)] flex flex-col justify-between min-h-[300px] overflow-hidden">
                 {/* Radial Glow Highlight on Hover */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle_at_top_right,rgba(224,67,43,0.15),transparent_70%)] rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
 
                 <div>
                   {/* Card Top: Number & Category */}

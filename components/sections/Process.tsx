@@ -52,10 +52,11 @@ export default function Process() {
         </ScrollReveal>
 
         {/* Clean Numbered Layout (Horizontal on desktop, stacked on mobile) with Staggered Slide-up */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mt-12 items-stretch">
           {PROCESS_STEPS.map((step, idx) => (
-            <ScrollReveal key={step.number} delay={idx * 0.1} y={35}>
-              <div className="group p-8 rounded-2xl bg-[#F4F1EC]/[0.015] border border-[#F4F1EC]/10 flex flex-col justify-between min-h-[260px] transition-all duration-500 hover:-translate-y-1 hover:border-[#E0432B]/40 hover:shadow-[0_0_30px_rgba(224,67,43,0.08)]">
+            <ScrollReveal key={step.number} delay={idx * 0.1} y={35} className="h-full">
+              <div className="group h-full p-8 rounded-2xl bg-[#F4F1EC]/[0.015] border border-[#F4F1EC]/10 flex flex-col justify-between min-h-[260px] transition-all duration-500 hover:-translate-y-1 hover:border-[#E0432B]/40 hover:shadow-[0_0_30px_rgba(224,67,43,0.08)]">
+
                 <div>
                   <span className="font-display text-4xl sm:text-5xl font-extralight text-[#8A8A93] tracking-tight group-hover:text-[#E0432B] transition-colors duration-300">
                     {step.number}

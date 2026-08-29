@@ -66,7 +66,13 @@ function AtmosphericParticles({ count }: { count: number }) {
   );
 }
 
-function FloatingSculpture({ reducedMotion }: { reducedMotion: boolean }) {
+function FloatingSculpture({
+  reducedMotion,
+  isMobile,
+}: {
+  reducedMotion: boolean;
+  isMobile: boolean;
+}) {
   const meshRef = useRef<THREE.Mesh>(null!);
   const outerRef = useRef<THREE.Mesh>(null!);
   const targetPointer = useRef({ x: 0, y: 0 });
@@ -91,9 +97,9 @@ function FloatingSculpture({ reducedMotion }: { reducedMotion: boolean }) {
 
       // Mouse parallax smooth dampening
       meshRef.current.position.x +=
-        (targetPointer.current.x * 0.35 - meshRef.current.position.x) * 0.03;
+        (targetPointer.current.x * 0.2 - meshRef.current.position.x) * 0.03;
       meshRef.current.position.y +=
-        (targetPointer.current.y * 0.35 - meshRef.current.position.y) * 0.03;
+        (targetPointer.current.y * 0.2 - meshRef.current.position.y) * 0.03;
     }
 
     if (outerRef.current) {
@@ -104,35 +110,35 @@ function FloatingSculpture({ reducedMotion }: { reducedMotion: boolean }) {
     }
   });
 
+  const baseScale = isMobile ? 1.25 : 2.0;
+
   return (
-    <group position={[0.4, 0, -0.5]}>
-      <Float speed={reducedMotion ? 0 : 0.8} rotationIntensity={0.15} floatIntensity={0.25}>
+    <group position={isMobile ? [0, 0, -1] : [0.3, 0, -0.5]}>
+      <Float speed={reducedMotion ? 0 : 0.7} rotationIntensity={0.12} floatIntensity={0.2}>
         {/* Core Abstract Sculptural Mass */}
-        <mesh ref={meshRef} scale={2.2}>
-          <icosahedronGeometry args={[1.25, 4]} />
+        <mesh ref={meshRef} scale={baseScale}>
+          <icosahedronGeometry args={[1.2, 4]} />
           <MeshDistortMaterial
             color="#0D0914"
             emissive="#1A0704"
-            emissiveIntensity={0.15}
-            roughness={0.4}
-            metalness={0.7}
-            distort={reducedMotion ? 0 : 0.38}
-            speed={reducedMotion ? 0 : 0.6}
-            clearcoat={0.3}
-            clearcoatRoughness={0.4}
+            emissiveIntensity={0.08}
+            roughness={0.85}
+            metalness={0.15}
+            distort={reducedMotion ? 0 : isMobile ? 0.2 : 0.32}
+            speed={reducedMotion ? 0 : 0.5}
           />
         </mesh>
 
         {/* Outer Minimalist Wire Sculpture Halo */}
-        <mesh ref={outerRef} scale={2.75}>
-          <icosahedronGeometry args={[1.25, 1]} />
+        <mesh ref={outerRef} scale={baseScale * 1.22}>
+          <icosahedronGeometry args={[1.2, 1]} />
           <meshStandardMaterial
             color="#E0432B"
             wireframe
             transparent
-            opacity={0.035}
+            opacity={0.03}
             emissive="#E0432B"
-            emissiveIntensity={0.1}
+            emissiveIntensity={0.05}
           />
         </mesh>
       </Float>
@@ -166,13 +172,13 @@ export default function HeroScene() {
     };
   }, []);
 
-  const particleCount = isMobile ? 140 : 320;
-  const dpr: [number, number] = isMobile ? [1, 1.2] : [1, 1.5];
+  const particleCount = isMobile ? 100 : 280;
+  const dpr: [number, number] = isMobile ? [1, 1.1] : [1, 1.5];
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+    <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden bg-[#05050A]">
       <Canvas
-        camera={{ position: [0, 0, 7.5], fov: 42 }}
+        camera={{ position: [0, 0, 7.5], fov: isMobile ? 50 : 42 }}
         dpr={dpr}
         gl={{
           antialias: true,
@@ -180,30 +186,36 @@ export default function HeroScene() {
           powerPreference: "high-performance",
         }}
       >
-        <fog attach="fog" args={["#05050A", 4.5, 12.0]} />
+        <fog attach="fog" args={["#05050A", 4.0, 11.0]} />
 
         {/* Soft Ambient Shadow Base */}
-        <ambientLight intensity={0.15} />
+        <ambientLight intensity={0.2} />
 
         {/* Deep Left Fill Light */}
-        <directionalLight position={[-6, -3, -2]} intensity={0.3} color="#2A0B08" />
+        <directionalLight position={[-6, -3, -2]} intensity={0.2} color="#2A0B08" />
 
         {/* Warm Ember Rim Light Source on the Right */}
-        <pointLight position={[5.5, 1.5, 2.5]} intensity={3.8} distance={14} color="#E0432B" />
+        <pointLight
+          position={[5, 1.5, 2.5]}
+          intensity={isMobile ? 1.4 : 2.2}
+          distance={12}
+          color="#E0432B"
+        />
         <spotLight
-          position={[6, 2, 4]}
+          position={[5.5, 2, 3.5]}
           angle={0.6}
           penumbra={0.8}
-          intensity={4.5}
+          intensity={isMobile ? 1.6 : 2.5}
           color="#FF7048"
         />
 
         <AtmosphericParticles count={particleCount} />
-        <FloatingSculpture reducedMotion={reducedMotion} />
+        <FloatingSculpture reducedMotion={reducedMotion} isMobile={isMobile} />
       </Canvas>
     </div>
   );
 }
+
 
 
 

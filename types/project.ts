@@ -1,11 +1,19 @@
-export type Project = {
+export interface Project {
   slug: string;
   title: string;
-  client?: string;
   category: string;
-  summary: string;
+  shortDescription?: string;
+  summary?: string;
+  description?: string;
+  url: string;
   image: string;
-  year?: string;
-  aspectRatio?: "16/9" | "4/5" | "4/3" | "1/1";
+  gallery?: string[];
+  technologies?: string[];
   tags?: string[];
-};
+  services?: string[];
+  year?: string;
+  client?: string;
+  featured?: boolean;
+  tier?: "selected" | "wordpress";
+  aspectRatio?: "16/9" | "4/5" | "4/3" | "1/1";
+}

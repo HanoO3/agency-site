@@ -24,10 +24,11 @@ export default function Testimonials() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 items-stretch">
           {testimonials.map((t, idx) => (
-            <ScrollReveal key={idx} delay={idx * 0.1} y={30}>
-              <div className="group relative p-8 sm:p-10 rounded-2xl bg-[#F4F1EC]/[0.015] border border-[#F4F1EC]/10 hover:border-[#E0432B]/35 transition-all duration-400 ease-out hover:-translate-y-1 flex flex-col justify-between h-full">
+            <ScrollReveal key={idx} delay={idx * 0.1} y={30} className="h-full">
+              <div className="group relative p-8 sm:p-10 rounded-2xl bg-[#F4F1EC]/[0.015] border border-[#F4F1EC]/10 hover:border-[#E0432B]/35 transition-all duration-400 ease-out hover:-translate-y-1 flex flex-col justify-between h-full min-h-[260px]">
+
                 <div>
                   <span className="text-4xl text-[#E0432B]/60 font-serif leading-none block mb-4 select-none">
                     “
