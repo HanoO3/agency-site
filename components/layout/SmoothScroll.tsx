@@ -6,12 +6,18 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 export default function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Respect reduced motion
+    // Respect reduced motion or mobile touch devices (native momentum scroll)
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    if (prefersReducedMotion) {
+    const isTouchDevice =
+      typeof window !== "undefined" &&
+      (window.matchMedia("(pointer: coarse)").matches ||
+        window.innerWidth < 1024 ||
+        "ontouchstart" in window);
+
+    if (prefersReducedMotion || isTouchDevice) {
       return;
     }
 
@@ -22,7 +28,6 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
       gestureOrientation: "vertical",
       smoothWheel: true,
       wheelMultiplier: 0.9,
-      touchMultiplier: 1.5,
     });
 
     // Synchronize Lenis scroll with GSAP ScrollTrigger
@@ -43,3 +48,4 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
 
   return <>{children}</>;
 }
+

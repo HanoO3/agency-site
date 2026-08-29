@@ -29,7 +29,6 @@ html, body {
   width: 100%;
   max-width: 100vw;
   overflow-x: hidden;
-  overscroll-behavior-y: none;
   background-color: #05050a;
   color: #f4f1ec;
   font-family: var(--font-roboto-flex), "Roboto Flex", sans-serif;
@@ -37,6 +36,7 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
+
 
 
 /* Lenis Smooth Scroll Recommended Rules */
