@@ -1,6 +1,8 @@
-export type Testimonial = {
+export interface Testimonial {
+  quote: string;
   name: string;
+  author?: string;
   role: string;
   company: string;
-  quote: string;
-};
+  project?: string;
+}

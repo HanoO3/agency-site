@@ -1,18 +1,21 @@
 import { Testimonial } from "@/types/testimonial";
 
+// PLACEHOLDER TESTIMONIALS — replace with real client feedback before final launch. Do not keep fictional names in production.
 export const testimonials: Testimonial[] = [
   {
-    name: "Sara Ahmed",
-    role: "Founder",
-    company: "Nova Store",
+    name: "Ahmed Raza",
+    author: "Ahmed Raza",
+    role: "Co-Founder",
+    company: "Nexora Labs",
     quote:
-      "They took a vague idea and shipped a store that actually converts. Communication was clear the whole way through.",
+      "Cartcode delivered our web platform on time with exceptional engineering discipline and smooth interaction design. Their attention to detail made the entire collaboration seamless.",
   },
   {
-    name: "James Carter",
+    name: "Emily Chen",
+    author: "Emily Chen",
     role: "Product Lead",
-    company: "Orbit",
+    company: "Brightloop Studio",
     quote:
-      "The 3D touches on our landing page get mentioned in almost every user interview we run now.",
+      "Working with the Cartcode team helped us translate complex workflows into an elegant, high-performance interface that our users genuinely enjoy using every day.",
   },
 ];

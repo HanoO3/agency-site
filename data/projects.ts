@@ -1,7 +1,30 @@
 import { Project } from "@/types/project";
 
 export const projects: Project[] = [
-  // 1. FYCC (Flagship Selected Work)
+  // 1. Orbitask (Flagship Selected Work)
+  {
+    slug: "orbitask",
+    title: "Orbitask",
+    category: "Web Application / Project Management",
+    shortDescription:
+      "Orbitask is a modern project management and team collaboration platform designed to help teams organize projects, manage tasks, and coordinate work through a focused digital workspace.",
+    summary:
+      "Orbitask is a modern project management and team collaboration platform designed to help teams organize projects, manage tasks, and coordinate work through a focused digital workspace.",
+    description:
+      "Orbitask is a modern project management and team collaboration platform designed to help teams organize projects, manage tasks, and coordinate work through a focused digital workspace. Engineered for velocity and clarity, the platform provides intuitive sprint tracking, team workload analytics, real-time status updates, and a streamlined interface tailored for high-output product and engineering teams.",
+    image: "/images/projects/orbitask.jpg",
+    url: "https://orbitask-project-management.vercel.app/",
+    year: "2026",
+    client: "Orbitask Platform",
+    services: ["Web Application Engineering", "UI/UX Design", "Collaboration Systems"],
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "REST API"],
+    tags: ["Web Application", "Project Management", "Productivity"],
+    featured: true,
+    tier: "selected",
+    aspectRatio: "16/9",
+  },
+
+  // 2. FYCC (Flagship Selected Work)
   {
     slug: "fycc",
     title: "FYCC",
@@ -24,7 +47,7 @@ export const projects: Project[] = [
     aspectRatio: "16/9",
   },
 
-  // 2. MG News (Flagship Selected Work)
+  // 3. MG News (Flagship Selected Work)
   {
     slug: "mg-news",
     title: "MG News",
@@ -47,7 +70,7 @@ export const projects: Project[] = [
     aspectRatio: "16/9",
   },
 
-  // 3. Magicbox / MGLink (Flagship Selected Work)
+  // 4. Magicbox / MGLink (Flagship Selected Work)
   {
     slug: "magicbox-mglink",
     title: "Magicbox / MGLink",
@@ -70,7 +93,7 @@ export const projects: Project[] = [
     aspectRatio: "16/9",
   },
 
-  // 4. MiVue (Flagship Selected Work)
+  // 5. MiVue (Flagship Selected Work)
   {
     slug: "mivue",
     title: "MiVue",
@@ -93,7 +116,7 @@ export const projects: Project[] = [
     aspectRatio: "16/9",
   },
 
-  // 5. Uraan Multan (WordPress / Client Work)
+  // 6. Uraan Multan (WordPress / Client Work)
   {
     slug: "uraan-multan",
     title: "Uraan Multan",
@@ -116,7 +139,7 @@ export const projects: Project[] = [
     aspectRatio: "16/9",
   },
 
-  // 6. FFRC (WordPress / Client Work)
+  // 7. FFRC (WordPress / Client Work)
   {
     slug: "ffrc",
     title: "FFRC",
@@ -139,7 +162,7 @@ export const projects: Project[] = [
     aspectRatio: "16/9",
   },
 
-  // 7. Zavia School (WordPress / Client Work)
+  // 8. Zavia School (WordPress / Client Work)
   {
     slug: "zavia-school",
     title: "Zavia School",
@@ -162,7 +185,7 @@ export const projects: Project[] = [
     aspectRatio: "16/9",
   },
 
-  // 8. IG Bioscience (WordPress / Client Work)
+  // 9. IG Bioscience (WordPress / Client Work)
   {
     slug: "ig-bioscience",
     title: "IG Bioscience",
@@ -185,7 +208,7 @@ export const projects: Project[] = [
     aspectRatio: "16/9",
   },
 
-  // 9. SoManyC (WordPress / Client Work)
+  // 10. SoManyC (WordPress / Client Work)
   {
     slug: "somanyc",
     title: "SoManyC",
@@ -208,7 +231,7 @@ export const projects: Project[] = [
     aspectRatio: "16/9",
   },
 
-  // 10. Butt Oil Traders (WordPress / Client Work)
+  // 11. Butt Oil Traders (WordPress / Client Work)
   {
     slug: "butt-oil-traders",
     title: "Butt Oil Traders",
