@@ -3,7 +3,12 @@
 import { useRef, useMemo, useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, MeshDistortMaterial } from "@react-three/drei";
-import * as THREE from "three";
+import {
+  Color,
+  Points,
+  Mesh,
+  AdditiveBlending,
+} from "three";
 
 // Deterministic PRNG for particle generation
 function seededRandom(seed: number) {
@@ -12,14 +17,14 @@ function seededRandom(seed: number) {
 }
 
 function AtmosphericParticles({ count }: { count: number }) {
-  const pointsRef = useRef<THREE.Points>(null!);
+  const pointsRef = useRef<Points>(null!);
 
   const [positions, colors] = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const col = new Float32Array(count * 3);
-    const colorA = new THREE.Color("#5A1610");
-    const colorB = new THREE.Color("#E0432B");
-    const colorC = new THREE.Color("#FF7048");
+    const colorA = new Color("#5A1610");
+    const colorB = new Color("#E0432B");
+    const colorC = new Color("#FF7048");
 
     for (let i = 0; i < count; i++) {
       const seed = i * 4;
@@ -60,7 +65,7 @@ function AtmosphericParticles({ count }: { count: number }) {
         transparent
         opacity={0.35}
         sizeAttenuation
-        blending={THREE.AdditiveBlending}
+        blending={AdditiveBlending}
       />
     </points>
   );
@@ -73,8 +78,8 @@ function FloatingSculpture({
   reducedMotion: boolean;
   isMobile: boolean;
 }) {
-  const meshRef = useRef<THREE.Mesh>(null!);
-  const outerRef = useRef<THREE.Mesh>(null!);
+  const meshRef = useRef<Mesh>(null!);
+  const outerRef = useRef<Mesh>(null!);
   const targetPointer = useRef({ x: 0, y: 0 });
 
   useEffect(() => {

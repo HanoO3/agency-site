@@ -1,11 +1,14 @@
+import dynamic from "next/dynamic";
 import Hero from "@/components/sections/Hero";
-import Services from "@/components/sections/Services";
-import Work from "@/components/sections/Work";
-import About from "@/components/sections/About";
-import Team from "@/components/sections/Team";
-import Process from "@/components/sections/Process";
-import Testimonials from "@/components/sections/Testimonials";
-import Contact from "@/components/sections/Contact";
+
+// Below-fold sections loaded lazily — reduces initial JS parse time
+const Services = dynamic(() => import("@/components/sections/Services"));
+const Work = dynamic(() => import("@/components/sections/Work"));
+const About = dynamic(() => import("@/components/sections/About"));
+const Team = dynamic(() => import("@/components/sections/Team"));
+const Process = dynamic(() => import("@/components/sections/Process"));
+const Testimonials = dynamic(() => import("@/components/sections/Testimonials"));
+const Contact = dynamic(() => import("@/components/sections/Contact"));
 
 export default function Home() {
   return (

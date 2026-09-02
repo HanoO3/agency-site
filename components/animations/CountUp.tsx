@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 interface CountUpProps {
@@ -20,15 +20,17 @@ export default function CountUp({ value, duration = 2, className = "" }: CountUp
   const numericTarget = match ? parseInt(match[2], 10) : 0;
   const suffix = match ? match[3] : value;
 
-  const [currentCount, setCurrentCount] = useState(0);
-
   useEffect(() => {
-    if (!elementRef.current || isNaN(numericTarget)) return;
+    const el = elementRef.current;
+    if (!el || isNaN(numericTarget)) return;
+
+    // Set initial text without triggering a React re-render
+    el.textContent = `${prefix}0${suffix}`;
 
     const ctx = gsap.context(() => {
       const obj = { count: 0 };
       ScrollTrigger.create({
-        trigger: elementRef.current,
+        trigger: el,
         start: "top 85%",
         once: true,
         onEnter: () => {
@@ -37,7 +39,8 @@ export default function CountUp({ value, duration = 2, className = "" }: CountUp
             duration: duration || 2.2,
             ease: "power3.out",
             onUpdate: () => {
-              setCurrentCount(Math.floor(obj.count));
+              // Direct DOM mutation — bypasses React reconciler entirely (~130 re-renders eliminated)
+              if (el) el.textContent = `${prefix}${Math.floor(obj.count)}${suffix}`;
             },
           });
         },
@@ -45,13 +48,11 @@ export default function CountUp({ value, duration = 2, className = "" }: CountUp
     }, elementRef);
 
     return () => ctx.revert();
-  }, [numericTarget, duration]);
+  }, [numericTarget, duration, prefix, suffix]);
 
   return (
     <span ref={elementRef} className={className}>
-      {prefix}
-      {currentCount}
-      {suffix}
+      {prefix}0{suffix}
     </span>
   );
 }
