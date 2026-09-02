@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { useEffect, useRef, ReactNode } from "react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 export default function FadeIn({
   children,
@@ -12,14 +12,36 @@ export default function FadeIn({
   delay?: number;
   y?: number;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ref.current,
+        { opacity: 0, y },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          delay,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top 90%",
+            once: true,
+          },
+        }
+      );
+    }, ref);
+
+    return () => ctx.revert();
+  }, [delay, y]);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.6, delay, ease: "easeOut" }}
-    >
+    <div ref={ref} style={{ opacity: 0 }}>
       {children}
-    </motion.div>
+    </div>
   );
 }

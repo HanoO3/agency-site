@@ -6,7 +6,7 @@ import CountUp from "@/components/animations/CountUp";
 export default function About() {
   const stats = [
     { number: "40+", label: "Projects Delivered" },
-    { number: "6+", label: "Years Experience" },
+    { number: "4+", label: "Years Experience" },
     { number: "25+", label: "Happy Clients" },
   ];
 
